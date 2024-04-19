@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchObjectBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.SearchContainer
@@ -26,7 +26,7 @@ class SearchFragment : Fragment() {
         SearchAdapter()
     }
 
-    private val searchViewModel: SearchViewModel by activityViewModels {
+    private val searchViewModel: SearchViewModel by viewModels {
         container.searchContainer!!.createSearchResultViewModelFactory()
     }
 

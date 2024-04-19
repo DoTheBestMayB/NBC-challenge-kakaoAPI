@@ -8,8 +8,9 @@ import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchObjectBinding
+import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoAdapter
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.SearchContainer
 
 class SearchFragment : Fragment() {
@@ -18,12 +19,12 @@ class SearchFragment : Fragment() {
         (requireActivity().application as App).appContainer
     }
 
-    private var _binding: FragmentSearchObjectBinding? = null
-    private val binding: FragmentSearchObjectBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding: FragmentSearchBinding
         get() = _binding!!
 
-    private val adapter: SearchAdapter by lazy {
-        SearchAdapter()
+    private val adapter: MediaInfoAdapter by lazy {
+        MediaInfoAdapter()
     }
 
     private val searchViewModel: SearchViewModel by viewModels {
@@ -40,7 +41,7 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSearchObjectBinding.inflate(inflater, container, false)
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 

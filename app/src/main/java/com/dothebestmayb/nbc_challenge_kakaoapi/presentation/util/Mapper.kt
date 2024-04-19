@@ -1,7 +1,9 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageDocumentEntity
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoDocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
 
 fun ImageDocumentEntity.toWithBookmarked(isBookmarked: Boolean) = ImageDocumentStatus(
     collection = collection,
@@ -24,4 +26,13 @@ fun ImageDocumentStatus.toEntity() = ImageDocumentEntity(
     displaySiteName = displaySiteName,
     docUrl = docUrl,
     datetime = datetime
+)
+
+fun VideoDocumentStatus.toEntity() = VideoDocumentEntity(
+    title = title,
+    url = url,
+    datetime = datetime,
+    playTime = playTime,
+    thumbnail = thumbnail,
+    author = author,
 )

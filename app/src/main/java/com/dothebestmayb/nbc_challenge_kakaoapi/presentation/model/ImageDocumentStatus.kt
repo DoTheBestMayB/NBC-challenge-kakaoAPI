@@ -2,7 +2,7 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model
 
 import java.util.Date
 
-data class ImageDocumentStatus (
+data class ImageDocumentStatus(
     val collection: String,
     val thumbnailUrl: String,
     val imageUrl: String,
@@ -12,4 +12,4 @@ data class ImageDocumentStatus (
     val docUrl: String,
     val datetime: Date,
     val isBookmarked: Boolean,
-): MediaInfo
+) : MediaInfo

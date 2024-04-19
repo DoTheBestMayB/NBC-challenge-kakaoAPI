@@ -8,9 +8,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentBookmarkBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.BookmarkContainer
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfoBookmarkActionType
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search.MediaInfoAdapter
 
-class BookmarkFragment : Fragment() {
+class BookmarkFragment : Fragment(), MediaInfoOnClickListener {
 
     private val container by lazy {
         (requireActivity().application as App).appContainer
@@ -24,8 +28,15 @@ class BookmarkFragment : Fragment() {
         container.bookmarkContainer!!.createSearchResultViewModelFactory()
     }
 
-//    private val adapter: MediaInfoAdapter by lazy {
-//    }
+    private val adapter: MediaInfoAdapter by lazy {
+        MediaInfoAdapter(this, MediaInfoBookmarkActionType.REMOVE)
+    }
+
+    override fun onBookmarkChanged(mediaInfo: MediaInfo, isBookmarked: Boolean) = Unit
+
+    override fun remove(mediaInfo: MediaInfo) {
+        bookmarkViewModel.remove(mediaInfo)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,13 +64,13 @@ class BookmarkFragment : Fragment() {
         bookmarkViewModel.fetch()
     }
 
-    private fun setRecyclerView() = with(binding){
-//        rv.adapter = adapter
+    private fun setRecyclerView() = with(binding) {
+        rv.adapter = adapter
     }
 
     private fun setObserve() {
         bookmarkViewModel.bookmarkedImageDocuments.observe(viewLifecycleOwner) {
-//            adapter.submitList(it)
+            adapter.submitList(it)
         }
     }
 

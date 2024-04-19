@@ -13,6 +13,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.SearchContainer
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfoBookmarkActionType
 
 class SearchFragment : Fragment(), MediaInfoOnClickListener {
 
@@ -25,7 +26,7 @@ class SearchFragment : Fragment(), MediaInfoOnClickListener {
         get() = _binding!!
 
     private val adapter: MediaInfoAdapter by lazy {
-        MediaInfoAdapter(this)
+        MediaInfoAdapter(this, MediaInfoBookmarkActionType.STAY)
     }
 
     private val searchViewModel: SearchViewModel by viewModels {
@@ -35,6 +36,8 @@ class SearchFragment : Fragment(), MediaInfoOnClickListener {
     override fun onBookmarkChanged(mediaInfo: MediaInfo, isBookmarked: Boolean) {
         searchViewModel.updateBookmarkState(mediaInfo, isBookmarked)
     }
+
+    override fun remove(mediaInfo: MediaInfo) = Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

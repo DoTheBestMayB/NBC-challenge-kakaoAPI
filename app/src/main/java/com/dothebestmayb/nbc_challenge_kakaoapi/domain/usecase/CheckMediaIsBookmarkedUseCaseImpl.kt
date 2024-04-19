@@ -4,7 +4,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.BookmarkReposi
 
 class CheckMediaIsBookmarkedUseCaseImpl(
     private val bookmarkRepository: BookmarkRepository,
-): CheckMediaIsBookmarkedUseCase {
+) : CheckMediaIsBookmarkedUseCase {
     override suspend fun invoke(docUrl: String): Boolean {
         return bookmarkRepository.isBookmarked(docUrl)
     }

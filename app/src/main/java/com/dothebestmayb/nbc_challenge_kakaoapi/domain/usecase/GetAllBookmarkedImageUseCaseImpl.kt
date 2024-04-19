@@ -5,7 +5,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.BookmarkReposi
 
 class GetAllBookmarkedImageUseCaseImpl(
     private val bookmarkRepository: BookmarkRepository
-): GetAllBookmarkedImageUseCase {
+) : GetAllBookmarkedImageUseCase {
     override suspend fun invoke(): List<ImageDocumentEntity> {
         return bookmarkRepository.getAll()
     }

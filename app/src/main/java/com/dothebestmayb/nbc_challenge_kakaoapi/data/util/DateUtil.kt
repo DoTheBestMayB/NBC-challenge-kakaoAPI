@@ -14,6 +14,6 @@ object DateUtil {
     }
 
     fun formatDate(date: Date): String {
-        return formatFormat.format(date)
+        return parseFormat.format(date)
     }
 }

@@ -36,6 +36,7 @@ class AppContainer(private val context: Context) {
     fun createImageDocumentDao(): ImageDocumentDao {
         return db.imageDocumentDao()
     }
+
     fun createBookmarkRepository(): BookmarkRepository {
         return BookmarkRepositoryImpl(
             createImageDocumentDao()

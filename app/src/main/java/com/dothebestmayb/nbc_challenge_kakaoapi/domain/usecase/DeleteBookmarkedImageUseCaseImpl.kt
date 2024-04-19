@@ -5,7 +5,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.BookmarkReposi
 
 class DeleteBookmarkedImageUseCaseImpl(
     private val bookmarkRepository: BookmarkRepository,
-): DeleteBookmarkedImageUseCase {
+) : DeleteBookmarkedImageUseCase {
     override suspend fun invoke(imageDocumentEntity: ImageDocumentEntity) {
         bookmarkRepository.delete(imageDocumentEntity)
     }

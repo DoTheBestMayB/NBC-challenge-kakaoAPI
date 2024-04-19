@@ -8,7 +8,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.BookmarkReposi
 
 class BookmarkRepositoryImpl(
     private val dao: ImageDocumentDao,
-): BookmarkRepository {
+) : BookmarkRepository {
     override suspend fun getAll(): List<ImageDocumentEntity> {
         return dao.getAll().map { it.toEntity() }
     }

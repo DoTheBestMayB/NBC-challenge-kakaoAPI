@@ -10,4 +10,4 @@ data class VideoDocumentStatus(
     val thumbnail: String,
     val author: String,
     val isBookmarked: Boolean,
-): MediaInfo
+) : MediaInfo

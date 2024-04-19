@@ -83,7 +83,9 @@ class SearchViewModel(
 
         viewModelScope.launch {
             if (bookmarked) {
-                insertBookmarkedImageUseCase(listOf(result))
+                if (!checkMediaIsBookmarkedUseCase(result.docUrl)) {
+                    insertBookmarkedImageUseCase(listOf(result))
+                }
             } else {
                 deleteBookmarkedImageUseCase(result)
             }

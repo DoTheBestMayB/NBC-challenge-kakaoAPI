@@ -11,11 +11,13 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemSearchResultBind
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfoBookmarkActionType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
 import com.google.android.material.materialswitch.MaterialSwitch
 
 class MediaInfoAdapter(
     private val mediaInfoOnClickListener: MediaInfoOnClickListener,
+    private val type: MediaInfoBookmarkActionType,
 ) : ListAdapter<MediaInfo, RecyclerView.ViewHolder>(diff) {
 
     enum class PayLoad {
@@ -26,14 +28,20 @@ class MediaInfoAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ImageDocumentStatus) = with(binding) {
-            Glide.with(binding.root.context)
+            Glide.with(root.context)
                 .load(item.imageUrl)
                 .placeholder(R.drawable.transparent_background)
                 .into(ivThumbnail)
             tvSiteName.text = item.displaySiteName
             msBookmark.isChecked = item.isBookmarked
-            msBookmark.setOnCheckedChangeListener { buttonView, isChecked ->
-                mediaInfoOnClickListener.onBookmarkChanged(item, isChecked)
+            msBookmark.setOnCheckedChangeListener { _, isChecked ->
+                when (type) {
+                    MediaInfoBookmarkActionType.REMOVE -> mediaInfoOnClickListener.remove(item)
+                    MediaInfoBookmarkActionType.STAY -> mediaInfoOnClickListener.onBookmarkChanged(
+                        item,
+                        isChecked
+                    )
+                }
             }
         }
     }
@@ -89,7 +97,8 @@ class MediaInfoAdapter(
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
 
-        holder.itemView.findViewById<MaterialSwitch>(R.id.ms_bookmark).setOnCheckedChangeListener(null)
+        holder.itemView.findViewById<MaterialSwitch>(R.id.ms_bookmark)
+            .setOnCheckedChangeListener(null)
     }
 
     companion object {
@@ -114,15 +123,26 @@ class MediaInfoAdapter(
 
             // 북마킹 여부만 바뀌었는지를 판별하기 위함
             override fun getChangePayload(oldItem: MediaInfo, newItem: MediaInfo): Any? {
-                if (oldItem is ImageDocumentStatus && newItem is ImageDocumentStatus && checkDiffOnlyBookmark(oldItem, newItem)) {
+                if (oldItem is ImageDocumentStatus && newItem is ImageDocumentStatus && checkDiffOnlyBookmark(
+                        oldItem,
+                        newItem
+                    )
+                ) {
                     return PayLoad.ONLY_BOOKMARK
-                } else if (oldItem is VideoDocumentStatus && newItem is VideoDocumentStatus && checkDiffOnlyBookmark(oldItem, newItem)) {
+                } else if (oldItem is VideoDocumentStatus && newItem is VideoDocumentStatus && checkDiffOnlyBookmark(
+                        oldItem,
+                        newItem
+                    )
+                ) {
                     return PayLoad.ONLY_BOOKMARK
                 }
                 return null
             }
 
-            private fun checkDiffOnlyBookmark(oldItem: ImageDocumentStatus, newItem: ImageDocumentStatus): Boolean {
+            private fun checkDiffOnlyBookmark(
+                oldItem: ImageDocumentStatus,
+                newItem: ImageDocumentStatus
+            ): Boolean {
                 if (oldItem.collection != newItem.collection) return false
                 if (oldItem.thumbnailUrl != newItem.thumbnailUrl) return false
                 if (oldItem.imageUrl != newItem.imageUrl) return false
@@ -134,7 +154,10 @@ class MediaInfoAdapter(
                 return oldItem.isBookmarked != newItem.isBookmarked
             }
 
-            private fun checkDiffOnlyBookmark(oldItem: VideoDocumentStatus, newItem: VideoDocumentStatus): Boolean {
+            private fun checkDiffOnlyBookmark(
+                oldItem: VideoDocumentStatus,
+                newItem: VideoDocumentStatus
+            ): Boolean {
                 if (oldItem.title != newItem.title) return false
                 if (oldItem.url != newItem.url) return false
                 if (oldItem.datetime != newItem.datetime) return false

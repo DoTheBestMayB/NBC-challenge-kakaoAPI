@@ -5,5 +5,5 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.AppContainer
 
 class App : Application() {
 
-    val appContainer = AppContainer()
+    val appContainer = AppContainer(this)
 }

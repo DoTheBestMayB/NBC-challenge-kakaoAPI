@@ -1,3 +1,0 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.domain.model
-
-sealed interface MediaInfo

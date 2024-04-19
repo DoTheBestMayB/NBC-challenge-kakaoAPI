@@ -10,10 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoAdapter
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.SearchContainer
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), MediaInfoOnClickListener {
 
     private val container by lazy {
         (requireActivity().application as App).appContainer
@@ -24,11 +25,15 @@ class SearchFragment : Fragment() {
         get() = _binding!!
 
     private val adapter: MediaInfoAdapter by lazy {
-        MediaInfoAdapter()
+        MediaInfoAdapter(this)
     }
 
     private val searchViewModel: SearchViewModel by viewModels {
         container.searchContainer!!.createSearchResultViewModelFactory()
+    }
+
+    override fun onBookmarkChanged(mediaInfo: MediaInfo, isBookmarked: Boolean) {
+        searchViewModel.updateBookmarkState(mediaInfo, isBookmarked)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,6 +1,6 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.network
 
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.ImageSearchResponse
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.ImageSearchResponse
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -24,6 +24,9 @@ class SearchContainer(private val appContainer: AppContainer) {
     fun createSearchResultViewModelFactory(): AbstractSavedStateViewModelFactory {
         return object : AbstractSavedStateViewModelFactory() {
             val getKakaoImageUseCase = createGetKakaoImageUseCase()
+            val checkMediaIsBookmarkedUseCase = appContainer.createCheckMediaIsBookmarkedUseCase()
+            val deleteBookmarkedImageUseCase = appContainer.createDeleteBookmarkedImageUseCase()
+            val insertBookmarkedImageUseCase = appContainer.createInsertBookmarkedImageUseCase()
 
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(
@@ -31,7 +34,12 @@ class SearchContainer(private val appContainer: AppContainer) {
                 modelClass: Class<T>,
                 handle: SavedStateHandle
             ): T {
-                return SearchViewModel(getKakaoImageUseCase) as T
+                return SearchViewModel(
+                    getKakaoImageUseCase,
+                    checkMediaIsBookmarkedUseCase,
+                    deleteBookmarkedImageUseCase,
+                    insertBookmarkedImageUseCase,
+                ) as T
             }
         }
     }

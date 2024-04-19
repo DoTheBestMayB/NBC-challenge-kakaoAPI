@@ -2,7 +2,7 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.domain.model
 
 import java.util.Date
 
-data class ImageDocumentsEntity(
+data class ImageDocumentEntity(
     val collection: String,
     val thumbnailUrl: String,
     val imageUrl: String,
@@ -11,4 +11,4 @@ data class ImageDocumentsEntity(
     val displaySiteName: String,
     val docUrl: String,
     val datetime: Date,
-) : MediaInfo
+)

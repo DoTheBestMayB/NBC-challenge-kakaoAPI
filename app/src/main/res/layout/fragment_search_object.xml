@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.SearchObjectFragment">
+    tools:context=".presentation.search.SearchFragment">
 
     <EditText
         android:id="@+id/et_query"
@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:maxLength="20"
         android:maxLines="1"
+        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

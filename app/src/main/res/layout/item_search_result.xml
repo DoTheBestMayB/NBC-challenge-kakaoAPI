@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/iv_thumbnail"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_margin="12dp"
         android:scaleType="fitCenter"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,6 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:textStyle="bold"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@id/iv_thumbnail"
         app:layout_constraintTop_toTopOf="@id/iv_thumbnail"
         tools:text="티스토리" />

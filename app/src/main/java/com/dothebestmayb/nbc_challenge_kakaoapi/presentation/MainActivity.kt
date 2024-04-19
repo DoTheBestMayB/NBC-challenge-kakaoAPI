@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private fun setViewPager() = with(binding) {
         pager.adapter = adapter
         pager.isUserInputEnabled = false
+        pager.offscreenPageLimit = 1
     }
 
     private fun setTabLayout() = with(binding) {

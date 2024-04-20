@@ -20,8 +20,8 @@ class BookmarkRepositoryImpl(
         return videoDao.getAll().map { it.toEntity() }
     }
 
-    override suspend fun isImageBookmarked(docUrl: String): Boolean {
-        return imageDao.isBookmarked(docUrl)
+    override suspend fun isImageBookmarked(imageUrl: String): Boolean {
+        return imageDao.isBookmarked(imageUrl)
     }
 
     override suspend fun isVideoBookmarked(url: String): Boolean {

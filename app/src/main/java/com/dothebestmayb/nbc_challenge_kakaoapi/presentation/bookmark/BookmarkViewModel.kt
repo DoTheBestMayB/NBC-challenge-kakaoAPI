@@ -100,7 +100,7 @@ class BookmarkViewModel(
 
         val values = imageDocuments.value?.toMutableList() ?: return
         values.removeIf {
-            it.docUrl == item.docUrl
+            it.imageUrl == item.imageUrl
         }
         imageDocuments.value = values
     }
@@ -143,7 +143,7 @@ class BookmarkViewModel(
             }
         }
         val values = imageDocuments.value?.toMutableList() ?: return
-        val idx = values.indexOfFirst { it.docUrl == item.docUrl }
+        val idx = values.indexOfFirst { it.imageUrl == item.imageUrl }
         if (idx == -1) {
             values.add(item)
         } else {

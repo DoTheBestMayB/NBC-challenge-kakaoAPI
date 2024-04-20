@@ -110,7 +110,7 @@ class SearchViewModel(
 
             imageResponse.onSuccess { imageSearchEntity ->
                 val result = imageSearchEntity.documents.map {
-                    it.toWithBookmarked(checkImageIsBookmarkedUseCase(it.docUrl))
+                    it.toWithBookmarked(checkImageIsBookmarkedUseCase(it.imageUrl))
                 }
                 images.value = result
             }.onError { code, message ->
@@ -153,7 +153,7 @@ class SearchViewModel(
 
         // 북마킹 여부 업데이트
         images.value = images.value?.map {
-            if (it.docUrl == entity.docUrl) {
+            if (it.imageUrl == entity.imageUrl) {
                 it.copy(isBookmarked = bookmarked)
             } else {
                 it
@@ -168,7 +168,7 @@ class SearchViewModel(
             bookmarkEventHandler.postEvent(BookmarkingEvent(imageDocumentStatus, bookmarked))
 
             if (bookmarked) {
-                if (!checkImageIsBookmarkedUseCase(entity.docUrl)) {
+                if (!checkImageIsBookmarkedUseCase(entity.imageUrl)) {
                     insertBookmarkedImageUseCase(listOf(entity))
                 }
             } else {

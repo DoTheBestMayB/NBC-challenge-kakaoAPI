@@ -9,10 +9,10 @@ import java.util.Date
 data class ImageDocument(
     val collection: String,
     @ColumnInfo(name = "thumbnail_url") val thumbnailUrl: String,
-    @ColumnInfo(name = "image_url") val imageUrl: String,
+    @PrimaryKey @ColumnInfo(name = "image_url") val imageUrl: String,
     val width: Int,
     val height: Int,
     @ColumnInfo(name = "display_site_name") val displaySiteName: String,
-    @PrimaryKey @ColumnInfo(name = "doc_url") val docUrl: String,
+    @ColumnInfo(name = "doc_url") val docUrl: String,
     val datetime: Date,
 )

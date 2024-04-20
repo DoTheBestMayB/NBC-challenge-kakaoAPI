@@ -8,7 +8,7 @@ interface BookmarkRepository {
     suspend fun getAllImage(): List<ImageDocumentEntity>
     suspend fun getAllVideo(): List<VideoDocumentEntity>
 
-    suspend fun isImageBookmarked(docUrl: String): Boolean
+    suspend fun isImageBookmarked(imageUrl: String): Boolean
     suspend fun isVideoBookmarked(url: String): Boolean
 
     suspend fun insertAllImage(imageDocumentEntities: List<ImageDocumentEntity>)

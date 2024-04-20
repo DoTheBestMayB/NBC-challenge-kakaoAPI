@@ -11,8 +11,8 @@ interface ImageDocumentDao {
     @Query("SELECT * FROM imageDocuments")
     suspend fun getAll(): List<ImageDocument>
 
-    @Query("SELECT EXISTS(SELECT * FROM imageDocuments WHERE doc_url = :docUrl)")
-    suspend fun isBookmarked(docUrl: String): Boolean
+    @Query("SELECT EXISTS(SELECT * FROM imageDocuments WHERE image_url = :imageUrl)")
+    suspend fun isBookmarked(imageUrl: String): Boolean
 
     @Insert
     suspend fun insertAll(imageDocuments: List<ImageDocument>)

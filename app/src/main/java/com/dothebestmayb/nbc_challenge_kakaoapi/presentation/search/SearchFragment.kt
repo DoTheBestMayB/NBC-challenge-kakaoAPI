@@ -11,9 +11,9 @@ import androidx.fragment.app.viewModels
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.bookmark.BookmarkEventHandler
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.SearchContainer
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfoBookmarkActionType
 
 class SearchFragment : Fragment(), MediaInfoOnClickListener {
 
@@ -25,16 +25,25 @@ class SearchFragment : Fragment(), MediaInfoOnClickListener {
     private val binding: FragmentSearchBinding
         get() = _binding!!
 
-    private val adapter: MediaInfoAdapter by lazy {
-        MediaInfoAdapter(this, MediaInfoBookmarkActionType.STAY)
+    private val adapter: SearchAdapter by lazy {
+        SearchAdapter(this)
     }
 
     private val searchViewModel: SearchViewModel by viewModels {
         container.searchContainer!!.createSearchResultViewModelFactory()
     }
 
+    private val bookmarkEventHandler: BookmarkEventHandler by lazy {
+        BookmarkEventHandler()
+    }
+
+
+    private val searchEventHandler: SearchEventHandler by lazy {
+        SearchEventHandler()
+    }
+
     override fun onBookmarkChanged(mediaInfo: MediaInfo, isBookmarked: Boolean) {
-        searchViewModel.updateBookmarkState(mediaInfo, isBookmarked)
+        searchViewModel.updateBookmarkState(mediaInfo, isBookmarked, false)
     }
 
     override fun remove(mediaInfo: MediaInfo) = Unit
@@ -56,9 +65,18 @@ class SearchFragment : Fragment(), MediaInfoOnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setEventBus()
         setRecyclerView()
         setListener()
         setObserve()
+    }
+
+    private fun setEventBus() {
+        searchViewModel.registerEventBus(bookmarkEventHandler, searchEventHandler)
+
+        searchEventHandler.subscribeEvent(viewLifecycleOwner) {
+            searchViewModel.updateBookmarkState(it.mediaInfo, it.bookmarked, true)
+        }
     }
 
     private fun setRecyclerView() = with(binding) {

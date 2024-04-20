@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp">
+
+
+    <ImageView
+        android:id="@+id/iv_thumbnail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/sample_image" />
+
+    <TextView
+        android:id="@+id/tv_site_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="14dp"
+        android:ellipsize="end"
+        android:maxEms="10"
+        android:maxLines="1"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/iv_thumbnail"
+        app:layout_constraintTop_toBottomOf="@id/iv_thumbnail"
+        tools:text="Youtube" />
+
+    <TextView
+        android:id="@+id/tv_upload_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_site_name"
+        app:layout_constraintStart_toEndOf="@id/tv_site_name"
+        app:layout_constraintTop_toTopOf="@id/tv_site_name"
+        tools:text="2017.06.06" />
+
+    <ImageView
+        android:id="@+id/iv_bookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:src="@drawable/bookmark_add_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/iv_thumbnail"
+        app:layout_constraintTop_toBottomOf="@id/iv_thumbnail" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

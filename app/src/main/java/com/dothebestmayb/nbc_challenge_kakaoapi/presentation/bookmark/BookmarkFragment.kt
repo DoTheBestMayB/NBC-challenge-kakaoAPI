@@ -11,8 +11,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.BookmarkContainer
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfoBookmarkActionType
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search.MediaInfoAdapter
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search.SearchEventHandler
 
 class BookmarkFragment : Fragment(), MediaInfoOnClickListener {
 
@@ -28,8 +27,16 @@ class BookmarkFragment : Fragment(), MediaInfoOnClickListener {
         container.bookmarkContainer!!.createSearchResultViewModelFactory()
     }
 
-    private val adapter: MediaInfoAdapter by lazy {
-        MediaInfoAdapter(this, MediaInfoBookmarkActionType.REMOVE)
+    private val adapter: BookmarkAdapter by lazy {
+        BookmarkAdapter(this)
+    }
+
+    private val bookmarkEventHandler: BookmarkEventHandler by lazy {
+        BookmarkEventHandler()
+    }
+
+    private val searchEventHandler: SearchEventHandler by lazy {
+        SearchEventHandler()
     }
 
     override fun onBookmarkChanged(mediaInfo: MediaInfo, isBookmarked: Boolean) = Unit
@@ -55,9 +62,18 @@ class BookmarkFragment : Fragment(), MediaInfoOnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setEventBus()
         init()
         setRecyclerView()
         setObserve()
+    }
+
+    private fun setEventBus() {
+        bookmarkViewModel.registerEventBus(bookmarkEventHandler, searchEventHandler)
+
+        bookmarkEventHandler.subscribeEvent(viewLifecycleOwner) {
+            bookmarkViewModel.update(it)
+        }
     }
 
     private fun init() {

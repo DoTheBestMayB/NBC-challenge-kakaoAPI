@@ -11,6 +11,8 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.CheckMediaIsBookm
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.DeleteBookmarkedImageUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetKakaoImageUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedImageUseCase
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.bookmark.BookmarkEventHandler
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.BookmarkingEvent
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
@@ -44,6 +46,16 @@ class SearchViewModel(
 
     private var page = 1
 
+    private lateinit var bookmarkEventHandler: BookmarkEventHandler
+    private lateinit var searchEventHandler: SearchEventHandler
+
+    fun registerEventBus(
+        bookmarkEventHandler: BookmarkEventHandler,
+        searchEventHandler: SearchEventHandler
+    ) {
+        this.bookmarkEventHandler = bookmarkEventHandler
+        this.searchEventHandler = searchEventHandler
+    }
 
     fun fetchDataFromServer() {
         val query = _query.value ?: return
@@ -67,21 +79,27 @@ class SearchViewModel(
         _query.value = query
     }
 
-    fun updateBookmarkState(mediaInfo: MediaInfo, bookmarked: Boolean) {
+    fun updateBookmarkState(mediaInfo: MediaInfo, bookmarked: Boolean, isFromBus: Boolean) {
         val result = when (mediaInfo) {
             is ImageDocumentStatus -> mediaInfo.toEntity()
             is VideoDocumentStatus -> TODO()
         }
         // 북마킹 여부 업데이트
         _images.value = _images.value?.map {
-            if (it == mediaInfo) {
+            if (it.docUrl == result.docUrl) {
                 it.copy(isBookmarked = bookmarked)
             } else {
                 it
             }
         }
 
+        if (isFromBus) {
+            return
+        }
+
         viewModelScope.launch {
+            bookmarkEventHandler.postEvent(BookmarkingEvent(mediaInfo, bookmarked))
+
             if (bookmarked) {
                 if (!checkMediaIsBookmarkedUseCase(result.docUrl)) {
                     insertBookmarkedImageUseCase(listOf(result))

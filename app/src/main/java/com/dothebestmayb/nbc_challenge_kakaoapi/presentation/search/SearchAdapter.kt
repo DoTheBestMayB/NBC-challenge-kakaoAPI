@@ -2,29 +2,28 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
-import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemSearchResultBinding
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.DateUtil
+import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfoBookmarkActionType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
-import com.google.android.material.materialswitch.MaterialSwitch
 
-class MediaInfoAdapter(
+class SearchAdapter(
     private val mediaInfoOnClickListener: MediaInfoOnClickListener,
-    private val type: MediaInfoBookmarkActionType,
 ) : ListAdapter<MediaInfo, RecyclerView.ViewHolder>(diff) {
 
     enum class PayLoad {
         ONLY_BOOKMARK
     }
 
-    inner class ImageViewHolder(private val binding: ItemSearchResultBinding) :
+    inner class ImageViewHolder(private val binding: ItemImageSearchResultBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ImageDocumentStatus) = with(binding) {
@@ -32,16 +31,23 @@ class MediaInfoAdapter(
                 .load(item.imageUrl)
                 .placeholder(R.drawable.transparent_background)
                 .into(ivThumbnail)
+            tvUploadTime.text = DateUtil.simpleFormatDate(item.datetime)
             tvSiteName.text = item.displaySiteName
-            msBookmark.isChecked = item.isBookmarked
-            msBookmark.setOnCheckedChangeListener { _, isChecked ->
-                when (type) {
-                    MediaInfoBookmarkActionType.REMOVE -> mediaInfoOnClickListener.remove(item)
-                    MediaInfoBookmarkActionType.STAY -> mediaInfoOnClickListener.onBookmarkChanged(
-                        item,
-                        isChecked
-                    )
-                }
+            changeBookmarkInfo(item)
+        }
+
+        fun changeBookmarkInfo(item: ImageDocumentStatus) = with(binding) {
+            if (item.isBookmarked) {
+                ivBookmark.setImageResource(R.drawable.baseline_bookmark_added_24)
+            } else {
+                ivBookmark.setImageResource(R.drawable.bookmark_add_24)
+
+            }
+            ivBookmark.setOnClickListener {
+                mediaInfoOnClickListener.onBookmarkChanged(
+                    item,
+                    item.isBookmarked.not()
+                )
             }
         }
     }
@@ -49,7 +55,11 @@ class MediaInfoAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             IMAGE_TYPE -> ImageViewHolder(
-                ItemSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ItemImageSearchResultBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
             )
 //            VIDEO_TYPE -> VideoViewHolder(
 //                ItemSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -78,7 +88,13 @@ class MediaInfoAdapter(
         }
         for (payload in payloads) {
             when (payload) {
-                PayLoad.ONLY_BOOKMARK -> continue // 북마크 여부만 바뀐경우 업데이트하지 않음
+                PayLoad.ONLY_BOOKMARK -> {
+                    when (holder) {
+                        is ImageViewHolder -> holder.changeBookmarkInfo(getItem(position) as ImageDocumentStatus)
+                        else -> TODO()
+                    }
+                }
+
                 else -> {
                     super.onBindViewHolder(holder, position, payloads)
                     return
@@ -97,8 +113,7 @@ class MediaInfoAdapter(
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
 
-        holder.itemView.findViewById<MaterialSwitch>(R.id.ms_bookmark)
-            .setOnCheckedChangeListener(null)
+        holder.itemView.findViewById<ImageView>(R.id.iv_bookmark).setOnClickListener(null)
     }
 
     companion object {
@@ -109,7 +124,7 @@ class MediaInfoAdapter(
         val diff = object : DiffUtil.ItemCallback<MediaInfo>() {
             override fun areItemsTheSame(oldItem: MediaInfo, newItem: MediaInfo): Boolean {
                 return if (oldItem is ImageDocumentStatus && newItem is ImageDocumentStatus) {
-                    oldItem.imageUrl == newItem.imageUrl
+                    oldItem.docUrl == newItem.docUrl
                 } else if (oldItem is VideoDocumentStatus && newItem is VideoDocumentStatus) {
                     oldItem.url == newItem.url
                 } else {

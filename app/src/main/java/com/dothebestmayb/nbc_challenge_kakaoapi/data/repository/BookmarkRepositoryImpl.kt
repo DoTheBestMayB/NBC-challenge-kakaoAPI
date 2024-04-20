@@ -18,7 +18,7 @@ class BookmarkRepositoryImpl(
     }
 
     override suspend fun insertAll(imageDocumentEntities: List<ImageDocumentEntity>) {
-        val documents = imageDocumentEntities.map { it.toData() }
+        val documents = imageDocumentEntities.filter { dao.isBookmarked(it.docUrl).not() }.map { it.toData() }
         dao.insertAll(documents)
     }
 

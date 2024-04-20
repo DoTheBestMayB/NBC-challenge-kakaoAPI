@@ -1,14 +1,19 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageDocumentEntity
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoDocumentEntity
 
 interface BookmarkRepository {
 
-    suspend fun getAll(): List<ImageDocumentEntity>
+    suspend fun getAllImage(): List<ImageDocumentEntity>
+    suspend fun getAllVideo(): List<VideoDocumentEntity>
 
-    suspend fun isBookmarked(docUrl: String): Boolean
+    suspend fun isImageBookmarked(docUrl: String): Boolean
+    suspend fun isVideoBookmarked(url: String): Boolean
 
-    suspend fun insertAll(imageDocumentEntities: List<ImageDocumentEntity>)
+    suspend fun insertAllImage(imageDocumentEntities: List<ImageDocumentEntity>)
+    suspend fun insertAllVideo(videoDocumentEntities: List<VideoDocumentEntity>)
 
-    suspend fun delete(imageDocumentEntity: ImageDocumentEntity)
+    suspend fun deleteImage(imageDocumentEntity: ImageDocumentEntity)
+    suspend fun deleteVideo(videoDocumentEntity: VideoDocumentEntity)
 }

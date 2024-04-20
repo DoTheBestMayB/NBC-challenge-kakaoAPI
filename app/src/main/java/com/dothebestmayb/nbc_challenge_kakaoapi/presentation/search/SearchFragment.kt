@@ -93,7 +93,7 @@ class SearchFragment : Fragment(), MediaInfoOnClickListener {
         searchViewModel.query.observe(viewLifecycleOwner) {
             searchViewModel.fetchDataFromServer()
         }
-        searchViewModel.images.observe(viewLifecycleOwner) {
+        searchViewModel.results.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
         searchViewModel.error.observe(viewLifecycleOwner) {

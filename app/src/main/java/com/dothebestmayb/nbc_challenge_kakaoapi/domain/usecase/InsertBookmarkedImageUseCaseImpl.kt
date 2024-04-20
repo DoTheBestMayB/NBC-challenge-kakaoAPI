@@ -7,6 +7,6 @@ class InsertBookmarkedImageUseCaseImpl(
     private val bookmarkRepository: BookmarkRepository
 ) : InsertBookmarkedImageUseCase {
     override suspend fun invoke(imageDocumentEntities: List<ImageDocumentEntity>) {
-        bookmarkRepository.insertAll(imageDocumentEntities)
+        bookmarkRepository.insertAllImage(imageDocumentEntities)
     }
 }

@@ -28,6 +28,16 @@ fun ImageDocumentStatus.toEntity() = ImageDocumentEntity(
     datetime = datetime
 )
 
+fun VideoDocumentEntity.toWithBookmarked(isBookmarked: Boolean) = VideoDocumentStatus(
+    title = title,
+    url = url,
+    datetime = datetime,
+    playTime = playTime,
+    thumbnail = thumbnail,
+    author = author,
+    isBookmarked = isBookmarked,
+)
+
 fun VideoDocumentStatus.toEntity() = VideoDocumentEntity(
     title = title,
     url = url,

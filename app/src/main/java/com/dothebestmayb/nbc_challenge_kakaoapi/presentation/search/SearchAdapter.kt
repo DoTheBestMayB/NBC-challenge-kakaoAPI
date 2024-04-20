@@ -3,6 +3,7 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.DateUtil
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResultBinding
+import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemVideoSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
@@ -52,6 +54,52 @@ class SearchAdapter(
         }
     }
 
+    inner class VideoViewHolder(private val binding: ItemVideoSearchResultBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: VideoDocumentStatus) = with(binding) {
+            Glide.with(root.context)
+                .load(item.thumbnail)
+                .placeholder(R.drawable.transparent_background)
+                .into(ivThumbNail)
+
+            setPlayTime(item.playTime, tvPlayTime)
+            tvTitle.text = item.title
+            tvSiteName.text = item.author
+            tvUploadTime.text = DateUtil.simpleFormatDate(item.datetime)
+            changeBookmarkInfo(item)
+        }
+
+        fun changeBookmarkInfo(item: VideoDocumentStatus) = with(binding) {
+            if (item.isBookmarked) {
+                ivBookmark.setImageResource(R.drawable.baseline_bookmark_added_24)
+            } else {
+                ivBookmark.setImageResource(R.drawable.bookmark_add_24)
+
+            }
+            ivBookmark.setOnClickListener {
+                mediaInfoOnClickListener.onBookmarkChanged(
+                    item,
+                    item.isBookmarked.not()
+                )
+            }
+        }
+
+        private fun setPlayTime(playTime: Int, view: TextView) {
+            val hours = playTime / 3600
+            val minutes = (playTime % 3600) / 60
+            val seconds = playTime % 60
+
+            val formattedTime = if (hours > 0) {
+                String.format("%02d:%02d:%02d", hours, minutes, seconds)
+            } else {
+                String.format("%02d:%02d", minutes, seconds)
+            }
+
+            view.text = formattedTime
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             IMAGE_TYPE -> ImageViewHolder(
@@ -61,19 +109,23 @@ class SearchAdapter(
                     false
                 )
             )
-//            VIDEO_TYPE -> VideoViewHolder(
-//                ItemSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-//            )
+
+            VIDEO_TYPE -> VideoViewHolder(
+                ItemVideoSearchResultBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+
             else -> throw IllegalArgumentException("Not implemented yet")
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        return when (holder) {
+        when (holder) {
             is ImageViewHolder -> holder.bind(getItem(position) as ImageDocumentStatus)
-            else -> {
-                TODO()
-            }
+            is VideoViewHolder -> holder.bind(getItem(position) as VideoDocumentStatus)
         }
     }
 
@@ -91,7 +143,7 @@ class SearchAdapter(
                 PayLoad.ONLY_BOOKMARK -> {
                     when (holder) {
                         is ImageViewHolder -> holder.changeBookmarkInfo(getItem(position) as ImageDocumentStatus)
-                        else -> TODO()
+                        is VideoViewHolder -> holder.changeBookmarkInfo(getItem(position) as VideoDocumentStatus)
                     }
                 }
 

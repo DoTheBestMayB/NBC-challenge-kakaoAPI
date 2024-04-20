@@ -2,10 +2,10 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.BookmarkRepository
 
-class CheckMediaIsBookmarkedUseCaseImpl(
+class CheckVideoIsBookmarkedUseCaseImpl(
     private val bookmarkRepository: BookmarkRepository,
-) : CheckMediaIsBookmarkedUseCase {
-    override suspend fun invoke(docUrl: String): Boolean {
-        return bookmarkRepository.isBookmarked(docUrl)
+) : CheckVideoIsBookmarkedUseCase {
+    override suspend fun invoke(url: String): Boolean {
+        return bookmarkRepository.isVideoBookmarked(url)
     }
 }

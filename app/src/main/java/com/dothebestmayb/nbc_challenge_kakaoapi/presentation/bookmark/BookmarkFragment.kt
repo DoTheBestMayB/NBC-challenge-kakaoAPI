@@ -85,7 +85,7 @@ class BookmarkFragment : Fragment(), MediaInfoOnClickListener {
     }
 
     private fun setObserve() {
-        bookmarkViewModel.bookmarkedImageDocuments.observe(viewLifecycleOwner) {
+        bookmarkViewModel.bookmarkedDocuments.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
     }

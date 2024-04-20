@@ -5,6 +5,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.map
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.toEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageSearchEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoSearchEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
 
 class KakaoSearchRepositoryImpl(
@@ -16,6 +17,16 @@ class KakaoSearchRepositoryImpl(
         size: Int
     ): NetworkResult<ImageSearchEntity> {
         return kakaoRemoteDataSource.getImage(query, page, size).map {
+            it.toEntity()
+        }
+    }
+
+    override suspend fun getVideo(
+        query: String,
+        page: Int,
+        size: Int
+    ): NetworkResult<VideoSearchEntity> {
+        return kakaoRemoteDataSource.getVideo(query, page, size).map {
             it.toEntity()
         }
     }

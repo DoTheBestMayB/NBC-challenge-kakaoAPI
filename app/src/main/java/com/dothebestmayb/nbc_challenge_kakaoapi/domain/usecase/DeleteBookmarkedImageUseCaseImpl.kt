@@ -7,6 +7,6 @@ class DeleteBookmarkedImageUseCaseImpl(
     private val bookmarkRepository: BookmarkRepository,
 ) : DeleteBookmarkedImageUseCase {
     override suspend fun invoke(imageDocumentEntity: ImageDocumentEntity) {
-        bookmarkRepository.delete(imageDocumentEntity)
+        bookmarkRepository.deleteImage(imageDocumentEntity)
     }
 }

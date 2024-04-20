@@ -34,24 +34,40 @@ class BookmarkAdapter(
         }
     }
 
+    inner class VideoViewHolder(private val binding: ItemBookmarkedBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: VideoDocumentStatus) = with(binding) {
+            Glide.with(root.context)
+                .load(item.thumbnail)
+                .placeholder(R.drawable.transparent_background)
+                .into(ivThumbnail)
+            tvSiteName.text = item.author
+
+            ivRemove.setOnClickListener {
+                mediaInfoOnClickListener.remove(item)
+            }
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             IMAGE_TYPE -> ImageViewHolder(
                 ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
-//            VIDEO_TYPE -> VideoViewHolder(
-//                ItemSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-//            )
+
+            VIDEO_TYPE -> VideoViewHolder(
+                ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            )
+
             else -> throw IllegalArgumentException("Not implemented yet")
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        return when (holder) {
+        when (holder) {
             is ImageViewHolder -> holder.bind(getItem(position) as ImageDocumentStatus)
-            else -> {
-                TODO()
-            }
+            is VideoViewHolder -> holder.bind(getItem(position) as VideoDocumentStatus)
         }
     }
 

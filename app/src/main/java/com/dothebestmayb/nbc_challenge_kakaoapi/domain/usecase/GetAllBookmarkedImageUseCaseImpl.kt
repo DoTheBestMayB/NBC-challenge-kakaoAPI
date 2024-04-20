@@ -7,6 +7,6 @@ class GetAllBookmarkedImageUseCaseImpl(
     private val bookmarkRepository: BookmarkRepository
 ) : GetAllBookmarkedImageUseCase {
     override suspend fun invoke(): List<ImageDocumentEntity> {
-        return bookmarkRepository.getAll()
+        return bookmarkRepository.getAllImage()
     }
 }

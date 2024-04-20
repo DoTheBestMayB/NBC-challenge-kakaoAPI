@@ -1,4 +1,4 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.data.database
+package com.dothebestmayb.nbc_challenge_kakaoapi.data.model.local
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

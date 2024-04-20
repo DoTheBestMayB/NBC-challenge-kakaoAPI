@@ -2,7 +2,6 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -10,9 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.DateUtil
+import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemHeaderBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemVideoSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
@@ -100,6 +102,16 @@ class SearchAdapter(
         }
     }
 
+    class HeaderViewHolder(private val binding: ItemHeaderBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: HeaderStatus) = with(binding) {
+            tvName.text = when (item.type) {
+                HeaderType.IMAGE -> binding.root.context.getString(R.string.image)
+                HeaderType.VIDEO -> binding.root.context.getString(R.string.video)
+            }
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             IMAGE_TYPE -> ImageViewHolder(
@@ -118,6 +130,14 @@ class SearchAdapter(
                 )
             )
 
+            HEADER_TYPE -> HeaderViewHolder(
+                ItemHeaderBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+
             else -> throw IllegalArgumentException("Not implemented yet")
         }
     }
@@ -126,6 +146,7 @@ class SearchAdapter(
         when (holder) {
             is ImageViewHolder -> holder.bind(getItem(position) as ImageDocumentStatus)
             is VideoViewHolder -> holder.bind(getItem(position) as VideoDocumentStatus)
+            is HeaderViewHolder -> holder.bind(getItem(position) as HeaderStatus)
         }
     }
 
@@ -159,19 +180,15 @@ class SearchAdapter(
         return when (getItem(position)) {
             is ImageDocumentStatus -> IMAGE_TYPE
             is VideoDocumentStatus -> VIDEO_TYPE
+            is HeaderStatus -> HEADER_TYPE
         }
-    }
-
-    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
-        super.onViewRecycled(holder)
-
-        holder.itemView.findViewById<ImageView>(R.id.iv_bookmark).setOnClickListener(null)
     }
 
     companion object {
 
         private const val IMAGE_TYPE = 0
         private const val VIDEO_TYPE = 1
+        private const val HEADER_TYPE = 2
 
         val diff = object : DiffUtil.ItemCallback<MediaInfo>() {
             override fun areItemsTheSame(oldItem: MediaInfo, newItem: MediaInfo): Boolean {

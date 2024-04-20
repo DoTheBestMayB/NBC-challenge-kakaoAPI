@@ -4,4 +4,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search">Search</string>
     <string name="bookmark">Bookmark</string>
+    <string name="image">이미지</string>
+    <string name="video">비디오</string>
 </resources>

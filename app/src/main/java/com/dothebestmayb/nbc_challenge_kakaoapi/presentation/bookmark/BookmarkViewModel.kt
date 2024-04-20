@@ -12,6 +12,8 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetAllBookmarkedV
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedImageUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedVideoUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.BookmarkingEvent
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
@@ -29,22 +31,31 @@ class BookmarkViewModel(
     private val insertBookmarkedVideoUseCase: InsertBookmarkedVideoUseCase,
 ) : ViewModel() {
 
-    private val _bookmarkedImageDocuments = MutableLiveData<List<ImageDocumentStatus>>()
-    val bookmarkedImageDocuments: LiveData<List<ImageDocumentStatus>>
-        get() = _bookmarkedImageDocuments
-
-    private val _bookmarkedVideoDocuments = MutableLiveData<List<VideoDocumentStatus>>()
-    val bookmarkedVideoDocuments: LiveData<List<VideoDocumentStatus>>
-        get() = _bookmarkedVideoDocuments
+    private val imageDocuments = MutableLiveData<List<ImageDocumentStatus>>()
+    private val videoDocuments = MutableLiveData<List<VideoDocumentStatus>>()
 
     private val _bookmarkedDocuments = MediatorLiveData<List<MediaInfo>>().apply {
-        addSource(bookmarkedImageDocuments) {
-            value = it as List<MediaInfo> + (bookmarkedVideoDocuments.value
-                ?: emptyList()) as List<MediaInfo>
+        addSource(imageDocuments) {
+            val imageValues: List<MediaInfo> = it?.let { documentStatuses ->
+                listOf(HeaderStatus(HeaderType.IMAGE)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
+            } ?: emptyList()
+
+            val videoValues: List<MediaInfo> = videoDocuments.value?.let { documentStatuses ->
+                listOf(HeaderStatus(HeaderType.VIDEO)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
+            } ?: emptyList()
+
+            value = imageValues + videoValues
         }
-        addSource(bookmarkedVideoDocuments) {
-            value = (bookmarkedImageDocuments.value
-                ?: emptyList()) as List<MediaInfo> + it as List<MediaInfo>
+        addSource(videoDocuments) {
+            val imageValues: List<MediaInfo> = imageDocuments.value?.let { documentStatuses ->
+                listOf(HeaderStatus(HeaderType.IMAGE)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
+            } ?: emptyList()
+
+            val videoValues: List<MediaInfo> = it?.let { documentStatuses ->
+                listOf(HeaderStatus(HeaderType.VIDEO)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
+            } ?: emptyList()
+
+            value = imageValues + videoValues
         }
     }
     val bookmarkedDocuments: LiveData<List<MediaInfo>>
@@ -63,9 +74,9 @@ class BookmarkViewModel(
 
     fun fetch() {
         viewModelScope.launch {
-            _bookmarkedImageDocuments.value =
+            imageDocuments.value =
                 getAllBookmarkedImageUseCase().map { it.toWithBookmarked(true) }
-            _bookmarkedVideoDocuments.value =
+            videoDocuments.value =
                 getAllBookmarkedVideoUseCase().map { it.toWithBookmarked(true) }
         }
     }
@@ -74,6 +85,7 @@ class BookmarkViewModel(
         when (mediaInfo) {
             is ImageDocumentStatus -> remove(mediaInfo, isUpdateAtRoom)
             is VideoDocumentStatus -> remove(mediaInfo, isUpdateAtRoom)
+            is HeaderStatus -> Unit
         }
     }
 
@@ -86,11 +98,11 @@ class BookmarkViewModel(
             }
         }
 
-        val values = _bookmarkedImageDocuments.value?.toMutableList() ?: return
+        val values = imageDocuments.value?.toMutableList() ?: return
         values.removeIf {
             it.docUrl == item.docUrl
         }
-        _bookmarkedImageDocuments.value = values
+        imageDocuments.value = values
     }
 
     private fun remove(item: VideoDocumentStatus, isUpdateAtRoom: Boolean = true) {
@@ -101,11 +113,11 @@ class BookmarkViewModel(
                 deleteBookmarkedVideoUseCase(item.toEntity())
             }
         }
-        val values = _bookmarkedVideoDocuments.value?.toMutableList() ?: return
+        val values = videoDocuments.value?.toMutableList() ?: return
         values.removeIf {
             it.url == item.url
         }
-        _bookmarkedVideoDocuments.value = values
+        videoDocuments.value = values
     }
 
     fun update(bookmarkingEvent: BookmarkingEvent) {
@@ -120,6 +132,7 @@ class BookmarkViewModel(
         when (mediaInfo) {
             is ImageDocumentStatus -> add(mediaInfo, isUpdateAtRoom)
             is VideoDocumentStatus -> add(mediaInfo, isUpdateAtRoom)
+            is HeaderStatus -> Unit
         }
     }
 
@@ -129,14 +142,14 @@ class BookmarkViewModel(
                 insertBookmarkedImageUseCase(listOf(item.toEntity()))
             }
         }
-        val values = _bookmarkedImageDocuments.value?.toMutableList() ?: return
+        val values = imageDocuments.value?.toMutableList() ?: return
         val idx = values.indexOfFirst { it.docUrl == item.docUrl }
         if (idx == -1) {
             values.add(item)
         } else {
             values[idx] = item
         }
-        _bookmarkedImageDocuments.value = values
+        imageDocuments.value = values
     }
 
     private fun add(item: VideoDocumentStatus, isUpdateAtRoom: Boolean = true) {
@@ -145,13 +158,13 @@ class BookmarkViewModel(
                 insertBookmarkedVideoUseCase(listOf(item.toEntity()))
             }
         }
-        val values = _bookmarkedVideoDocuments.value?.toMutableList() ?: return
+        val values = videoDocuments.value?.toMutableList() ?: return
         val idx = values.indexOfFirst { it.url == item.url }
         if (idx == -1) {
             values.add(item)
         } else {
             values[idx] = item
         }
-        _bookmarkedVideoDocuments.value = values
+        videoDocuments.value = values
     }
 }

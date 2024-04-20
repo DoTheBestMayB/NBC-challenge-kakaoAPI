@@ -18,6 +18,8 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedI
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedVideoUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.bookmark.BookmarkEventHandler
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.BookmarkingEvent
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
@@ -38,20 +40,32 @@ class SearchViewModel(
     private val insertBookmarkedVideoUseCase: InsertBookmarkedVideoUseCase,
 ) : ViewModel() {
 
-    private val _images = MutableLiveData<List<ImageDocumentStatus>>()
-    val images: LiveData<List<ImageDocumentStatus>>
-        get() = _images
-
-    private val _videos = MutableLiveData<List<VideoDocumentStatus>>()
-    val videos: LiveData<List<VideoDocumentStatus>>
-        get() = _videos
+    private val images = MutableLiveData<List<ImageDocumentStatus>>()
+    private val videos = MutableLiveData<List<VideoDocumentStatus>>()
 
     private val _results = MediatorLiveData<List<MediaInfo>>().apply {
         addSource(images) {
-            value = it as List<MediaInfo> + (videos.value ?: emptyList()) as List<MediaInfo>
+            val imageValues: List<MediaInfo> = it?.let { documentStatuses ->
+                listOf(HeaderStatus(HeaderType.IMAGE)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
+            } ?: emptyList()
+
+            val videoValues: List<MediaInfo> = videos.value?.let { documentStatuses ->
+                listOf(HeaderStatus(HeaderType.VIDEO)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
+            } ?: emptyList()
+
+            value = imageValues + videoValues
         }
+
         addSource(videos) {
-            value = (images.value ?: emptyList()) as List<MediaInfo> + it as List<MediaInfo>
+            val imageValues: List<MediaInfo> = images.value?.let { documentStatuses ->
+                listOf(HeaderStatus(HeaderType.IMAGE)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
+            } ?: emptyList()
+
+            val videoValues: List<MediaInfo> = it?.let { documentStatuses ->
+                listOf(HeaderStatus(HeaderType.VIDEO)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
+            } ?: emptyList()
+
+            value = imageValues + videoValues
         }
     }
     val results: LiveData<List<MediaInfo>>
@@ -82,8 +96,8 @@ class SearchViewModel(
         val query = _query.value
 
         if (query.isNullOrBlank()) {
-            _images.value = emptyList()
-            _videos.value = emptyList()
+            images.value = emptyList()
+            videos.value = emptyList()
             return
         }
 
@@ -98,7 +112,7 @@ class SearchViewModel(
                 val result = imageSearchEntity.documents.map {
                     it.toWithBookmarked(checkImageIsBookmarkedUseCase(it.docUrl))
                 }
-                _images.value = result
+                images.value = result
             }.onError { code, message ->
                 _error.value = "$code $message"
             }.onException {
@@ -109,7 +123,7 @@ class SearchViewModel(
                 val result = videoSearchEntity.documents.map {
                     it.toWithBookmarked(checkVideoIsBookmarkedUseCase(it.url))
                 }
-                _videos.value = result
+                videos.value = result
             }.onError { code, message ->
                 _error.value = "$code $message"
             }.onException {
@@ -126,6 +140,7 @@ class SearchViewModel(
         when (mediaInfo) {
             is ImageDocumentStatus -> update(mediaInfo, bookmarked, isFromBus)
             is VideoDocumentStatus -> update(mediaInfo, bookmarked, isFromBus)
+            is HeaderStatus -> Unit
         }
     }
 
@@ -137,7 +152,7 @@ class SearchViewModel(
         val entity = imageDocumentStatus.toEntity()
 
         // 북마킹 여부 업데이트
-        _images.value = _images.value?.map {
+        images.value = images.value?.map {
             if (it.docUrl == entity.docUrl) {
                 it.copy(isBookmarked = bookmarked)
             } else {
@@ -170,7 +185,7 @@ class SearchViewModel(
         val entity = videoDocumentStatus.toEntity()
 
         // 북마킹 여부 업데이트
-        _videos.value = _videos.value?.map {
+        videos.value = videos.value?.map {
             if (it.url == entity.url) {
                 it.copy(isBookmarked = bookmarked)
             } else {

@@ -196,6 +196,8 @@ class SearchAdapter(
                     oldItem.docUrl == newItem.docUrl
                 } else if (oldItem is VideoDocumentStatus && newItem is VideoDocumentStatus) {
                     oldItem.url == newItem.url
+                } else if(oldItem is HeaderStatus && newItem is HeaderStatus) {
+                    oldItem.type == newItem.type
                 } else {
                     false
                 }

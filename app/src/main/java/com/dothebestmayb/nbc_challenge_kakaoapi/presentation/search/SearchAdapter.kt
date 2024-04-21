@@ -12,6 +12,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.DateUtil
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemHeaderBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemVideoSearchResultBinding
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.AdapterType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
@@ -113,32 +114,21 @@ class SearchAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            IMAGE_TYPE -> ImageViewHolder(
-                ItemImageSearchResultBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
+        val adapterType =
+            AdapterType.from(viewType) ?: throw IllegalArgumentException("Not implemented yet")
+
+        return when (adapterType) {
+            AdapterType.IMAGE -> ImageViewHolder(
+                ItemImageSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
 
-            VIDEO_TYPE -> VideoViewHolder(
-                ItemVideoSearchResultBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
+            AdapterType.VIDEO -> VideoViewHolder(
+                ItemVideoSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
 
-            HEADER_TYPE -> HeaderViewHolder(
-                ItemHeaderBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
+            AdapterType.HEADER -> HeaderViewHolder(
+                ItemHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
-
-            else -> throw IllegalArgumentException("Not implemented yet")
         }
     }
 
@@ -178,17 +168,13 @@ class SearchAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is ImageDocumentStatus -> IMAGE_TYPE
-            is VideoDocumentStatus -> VIDEO_TYPE
-            is HeaderStatus -> HEADER_TYPE
+            is ImageDocumentStatus -> AdapterType.IMAGE.viewTypeValue
+            is VideoDocumentStatus -> AdapterType.VIDEO.viewTypeValue
+            is HeaderStatus -> AdapterType.HEADER.viewTypeValue
         }
     }
 
     companion object {
-
-        private const val IMAGE_TYPE = 0
-        private const val VIDEO_TYPE = 1
-        private const val HEADER_TYPE = 2
 
         val diff = object : DiffUtil.ItemCallback<MediaInfo>() {
             override fun areItemsTheSame(oldItem: MediaInfo, newItem: MediaInfo): Boolean {
@@ -196,7 +182,7 @@ class SearchAdapter(
                     oldItem.docUrl == newItem.docUrl
                 } else if (oldItem is VideoDocumentStatus && newItem is VideoDocumentStatus) {
                     oldItem.url == newItem.url
-                } else if(oldItem is HeaderStatus && newItem is HeaderStatus) {
+                } else if (oldItem is HeaderStatus && newItem is HeaderStatus) {
                     oldItem.type == newItem.type
                 } else {
                     false

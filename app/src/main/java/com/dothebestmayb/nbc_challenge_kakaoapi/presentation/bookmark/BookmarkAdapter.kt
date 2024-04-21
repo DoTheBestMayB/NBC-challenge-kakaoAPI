@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemBookmarkedBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemHeaderBinding
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.AdapterType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
@@ -63,20 +64,21 @@ class BookmarkAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            IMAGE_TYPE -> ImageViewHolder(
+        val adapterType =
+            AdapterType.from(viewType) ?: throw IllegalArgumentException("Not implemented yet")
+
+        return when (adapterType) {
+            AdapterType.IMAGE -> ImageViewHolder(
                 ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
 
-            VIDEO_TYPE -> VideoViewHolder(
+            AdapterType.VIDEO -> VideoViewHolder(
                 ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
 
-            HEADER_TYPE -> HeaderViewHolder(
+            AdapterType.HEADER -> HeaderViewHolder(
                 ItemHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
-
-            else -> throw IllegalArgumentException("Not implemented yet")
         }
     }
 
@@ -90,17 +92,13 @@ class BookmarkAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is ImageDocumentStatus -> IMAGE_TYPE
-            is VideoDocumentStatus -> VIDEO_TYPE
-            is HeaderStatus -> HEADER_TYPE
+            is ImageDocumentStatus -> AdapterType.IMAGE.viewTypeValue
+            is VideoDocumentStatus -> AdapterType.VIDEO.viewTypeValue
+            is HeaderStatus -> AdapterType.HEADER.viewTypeValue
         }
     }
 
     companion object {
-
-        private const val IMAGE_TYPE = 0
-        private const val VIDEO_TYPE = 1
-        private const val HEADER_TYPE = 2
 
         val diff = object : DiffUtil.ItemCallback<MediaInfo>() {
             override fun areItemsTheSame(oldItem: MediaInfo, newItem: MediaInfo): Boolean {

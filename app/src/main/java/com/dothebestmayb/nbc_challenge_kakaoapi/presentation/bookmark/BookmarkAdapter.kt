@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemBookmarkedBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemHeaderBinding
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus

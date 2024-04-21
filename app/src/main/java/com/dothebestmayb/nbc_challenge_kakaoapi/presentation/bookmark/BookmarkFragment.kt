@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentBookmarkBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.BookmarkContainer
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search.SearchEventHandler

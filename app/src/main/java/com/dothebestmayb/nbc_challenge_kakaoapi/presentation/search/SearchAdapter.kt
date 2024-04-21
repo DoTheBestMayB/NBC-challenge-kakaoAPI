@@ -12,7 +12,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.DateUtil
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemHeaderBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemVideoSearchResultBinding
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.MediaInfoOnClickListener
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus

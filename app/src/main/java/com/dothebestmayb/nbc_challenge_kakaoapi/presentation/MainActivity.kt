@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ActivityMainBinding
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.SearchCollectionAdapter
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.TabType
 import com.google.android.material.tabs.TabLayoutMediator
 

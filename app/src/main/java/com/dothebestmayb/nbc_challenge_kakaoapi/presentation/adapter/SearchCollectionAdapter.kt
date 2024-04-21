@@ -1,4 +1,4 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.presentation
+package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity

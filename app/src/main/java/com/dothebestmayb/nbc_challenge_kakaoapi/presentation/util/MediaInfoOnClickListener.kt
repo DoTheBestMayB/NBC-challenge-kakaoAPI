@@ -1,4 +1,4 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter
+package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 

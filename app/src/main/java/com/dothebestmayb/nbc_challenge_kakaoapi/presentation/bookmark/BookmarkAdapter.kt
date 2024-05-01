@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemBookmarkedBinding
+import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemUnknownBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.AdapterType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 
@@ -51,11 +52,13 @@ class BookmarkAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val adapterType =
-            AdapterType.from(viewType) ?: throw IllegalArgumentException("Not implemented yet")
+    class UnknownViewHolder(
+        binding: ItemUnknownBinding
+    ) : RecyclerView.ViewHolder(binding.root)
 
-        return when (adapterType) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
+        return when (AdapterType.from(viewType)) {
             AdapterType.IMAGE -> ImageViewHolder(
                 ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false),
                 onRemove,
@@ -64,6 +67,10 @@ class BookmarkAdapter(
             AdapterType.VIDEO -> VideoViewHolder(
                 ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false),
                 onRemove,
+            )
+
+            else -> UnknownViewHolder(
+                ItemUnknownBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
         }
     }

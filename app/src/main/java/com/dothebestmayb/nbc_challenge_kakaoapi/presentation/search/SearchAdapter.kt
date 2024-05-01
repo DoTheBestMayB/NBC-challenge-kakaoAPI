@@ -5,18 +5,19 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.DateUtil
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResultBinding
+import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemUnknownBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemVideoSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.AdapterType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 
 class SearchAdapter(
     private val onBookmarkChanged: (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
-) : ListAdapter<MediaInfo, RecyclerView.ViewHolder>(diff) {
+) : ListAdapter<MediaInfo, ViewHolder>(diff) {
 
     enum class PayLoad {
         ONLY_BOOKMARK
@@ -25,7 +26,7 @@ class SearchAdapter(
     class ImageViewHolder(
         private val binding: ItemImageSearchResultBinding,
         private val onBookmark: (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
-    ) : RecyclerView.ViewHolder(binding.root) {
+    ) : ViewHolder(binding.root) {
 
         fun bind(item: MediaInfo.ImageDocumentStatus) = with(binding) {
             Glide.with(root.context)
@@ -53,7 +54,7 @@ class SearchAdapter(
     class VideoViewHolder(
         private val binding: ItemVideoSearchResultBinding,
         private val onBookmark: (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
-    ) : RecyclerView.ViewHolder(binding.root) {
+    ) : ViewHolder(binding.root) {
 
         fun bind(item: MediaInfo.VideoDocumentStatus) = with(binding) {
             Glide.with(root.context)
@@ -95,11 +96,12 @@ class SearchAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val adapterType =
-            AdapterType.from(viewType) ?: throw IllegalArgumentException("Not implemented yet")
+    class UnknownViewHolder(
+        binding: ItemUnknownBinding
+    ) : ViewHolder(binding.root)
 
-        return when (adapterType) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return when (AdapterType.from(viewType)) {
             AdapterType.IMAGE -> ImageViewHolder(
                 ItemImageSearchResultBinding.inflate(
                     LayoutInflater.from(parent.context),
@@ -117,10 +119,18 @@ class SearchAdapter(
                 ),
                 onBookmarkChanged,
             )
+
+            else -> UnknownViewHolder(
+                ItemUnknownBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ImageViewHolder -> holder.bind(getItem(position) as MediaInfo.ImageDocumentStatus)
             is VideoViewHolder -> holder.bind(getItem(position) as MediaInfo.VideoDocumentStatus)
@@ -128,7 +138,7 @@ class SearchAdapter(
     }
 
     override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
+        holder: ViewHolder,
         position: Int,
         payloads: MutableList<Any>
     ) {

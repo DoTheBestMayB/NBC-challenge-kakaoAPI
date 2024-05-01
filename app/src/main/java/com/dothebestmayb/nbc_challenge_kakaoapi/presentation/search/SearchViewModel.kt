@@ -16,8 +16,6 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetKakaoImageUseC
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetKakaoVideoUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedImageUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedVideoUseCase
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.bookmark.BookmarkEventHandler
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.BookmarkingEvent
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
@@ -27,6 +25,8 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.debounce
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toWithBookmarked
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -81,16 +81,8 @@ class SearchViewModel(
 
     private var page = 1
 
-    private lateinit var bookmarkEventHandler: BookmarkEventHandler
-    private lateinit var searchEventHandler: SearchEventHandler
-
-    fun registerEventBus(
-        bookmarkEventHandler: BookmarkEventHandler,
-        searchEventHandler: SearchEventHandler
-    ) {
-        this.bookmarkEventHandler = bookmarkEventHandler
-        this.searchEventHandler = searchEventHandler
-    }
+    private val _event = MutableSharedFlow<SearchEvent>()
+    val event = _event.asSharedFlow()
 
     fun fetchDataFromServer() {
         val query = _query.value
@@ -102,7 +94,7 @@ class SearchViewModel(
         }
 
         viewModelScope.launch {
-            val videoResponse = async {
+            val videoResponse = async { // 실제로 순차적이 아니라 동시에 하는지 확인하기(이미지도 받아오는지)
                 getKakaoVideoUseCase(query, page)
             }
 
@@ -165,7 +157,7 @@ class SearchViewModel(
         }
 
         viewModelScope.launch {
-            bookmarkEventHandler.postEvent(BookmarkingEvent(imageDocumentStatus, bookmarked))
+            _event.emit(SearchEvent.UpdateBookmark(imageDocumentStatus, bookmarked))
 
             if (bookmarked) {
                 if (!checkImageIsBookmarkedUseCase(entity.imageUrl)) {
@@ -198,7 +190,7 @@ class SearchViewModel(
         }
 
         viewModelScope.launch {
-            bookmarkEventHandler.postEvent(BookmarkingEvent(videoDocumentStatus, bookmarked))
+            _event.emit(SearchEvent.UpdateBookmark(videoDocumentStatus, bookmarked))
 
             if (bookmarked) {
                 if (!checkImageIsBookmarkedUseCase(entity.url)) {

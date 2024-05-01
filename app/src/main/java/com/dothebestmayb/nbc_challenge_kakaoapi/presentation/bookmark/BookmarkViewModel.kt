@@ -11,15 +11,16 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetAllBookmarkedI
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetAllBookmarkedVideoUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedImageUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedVideoUseCase
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.BookmarkingEvent
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search.SearchEventHandler
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toWithBookmarked
+import com.dothebestmayb.nbc_challenge_kakaoapi.shared.SearchSharedEvent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class BookmarkViewModel(
@@ -61,16 +62,8 @@ class BookmarkViewModel(
     val bookmarkedDocuments: LiveData<List<MediaInfo>>
         get() = _bookmarkedDocuments
 
-    private lateinit var bookmarkEventHandler: BookmarkEventHandler
-    private lateinit var searchEventHandler: SearchEventHandler
-
-    fun registerEventBus(
-        bookmarkEventHandler: BookmarkEventHandler,
-        searchEventHandler: SearchEventHandler
-    ) {
-        this.bookmarkEventHandler = bookmarkEventHandler
-        this.searchEventHandler = searchEventHandler
-    }
+    private val _event = MutableSharedFlow<BookmarkEvent>()
+    val event = _event.asSharedFlow()
 
     fun fetch() {
         viewModelScope.launch {
@@ -92,8 +85,7 @@ class BookmarkViewModel(
     private fun remove(item: ImageDocumentStatus, isUpdateAtRoom: Boolean = true) {
         if (isUpdateAtRoom) {
             viewModelScope.launch {
-                searchEventHandler.postEvent(BookmarkingEvent(item, false))
-
+                _event.emit(BookmarkEvent.UpdateBookmark(item, false))
                 deleteBookmarkedImageUseCase(item.toEntity())
             }
         }
@@ -108,7 +100,7 @@ class BookmarkViewModel(
     private fun remove(item: VideoDocumentStatus, isUpdateAtRoom: Boolean = true) {
         if (isUpdateAtRoom) {
             viewModelScope.launch {
-                searchEventHandler.postEvent(BookmarkingEvent(item, false))
+                _event.emit(BookmarkEvent.UpdateBookmark(item, false))
 
                 deleteBookmarkedVideoUseCase(item.toEntity())
             }
@@ -120,11 +112,11 @@ class BookmarkViewModel(
         videoDocuments.value = values
     }
 
-    fun update(bookmarkingEvent: BookmarkingEvent) {
-        if (bookmarkingEvent.bookmarked) {
-            add(bookmarkingEvent.mediaInfo, false)
+    fun update(searchSharedEvent: SearchSharedEvent.UpdateBookmark) {
+        if (searchSharedEvent.bookmarked) {
+            add(searchSharedEvent.mediaInfo, false)
         } else {
-            remove(bookmarkingEvent.mediaInfo, false)
+            remove(searchSharedEvent.mediaInfo, false)
         }
     }
 

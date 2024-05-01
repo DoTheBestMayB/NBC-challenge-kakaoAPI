@@ -7,12 +7,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.bookmark.BookmarkEventHandler
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.SearchContainer
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
+import com.dothebestmayb.nbc_challenge_kakaoapi.shared.SearchSharedEvent
+import com.dothebestmayb.nbc_challenge_kakaoapi.shared.SearchSharedViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment() {
 
@@ -36,14 +42,7 @@ class SearchFragment : Fragment() {
         container.searchContainer!!.createSearchResultViewModelFactory()
     }
 
-    private val bookmarkEventHandler: BookmarkEventHandler by lazy {
-        BookmarkEventHandler()
-    }
-
-
-    private val searchEventHandler: SearchEventHandler by lazy {
-        SearchEventHandler()
-    }
+    private val searchSharedViewModel: SearchSharedViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,18 +61,9 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setEventBus()
         setRecyclerView()
         setListener()
         setObserve()
-    }
-
-    private fun setEventBus() {
-        searchViewModel.registerEventBus(bookmarkEventHandler, searchEventHandler)
-
-        searchEventHandler.subscribeEvent(viewLifecycleOwner) {
-            searchViewModel.updateBookmarkState(it.mediaInfo, it.bookmarked, true)
-        }
     }
 
     private fun setRecyclerView() = with(binding) {
@@ -95,6 +85,32 @@ class SearchFragment : Fragment() {
         }
         searchViewModel.error.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            searchViewModel.event.flowWithLifecycle(lifecycle)
+                .collectLatest { event ->
+                    onEvent(event)
+                }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            searchSharedViewModel.searchMarkEvents.flowWithLifecycle(lifecycle)
+                .collectLatest { event ->
+                    when (event) {
+                        is SearchSharedEvent.UpdateBookmark -> {
+                            searchViewModel.updateBookmarkState(
+                                event.mediaInfo,
+                                event.bookmarked,
+                                true
+                            )
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun onEvent(event: SearchEvent) {
+        when (event) {
+            is SearchEvent.UpdateBookmark -> searchSharedViewModel.updateEvent(event)
         }
     }
 

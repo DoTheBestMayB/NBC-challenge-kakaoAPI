@@ -5,12 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentBookmarkBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.BookmarkContainer
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search.SearchEventHandler
+import com.dothebestmayb.nbc_challenge_kakaoapi.shared.SearchSharedEvent
+import com.dothebestmayb.nbc_challenge_kakaoapi.shared.SearchSharedViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class BookmarkFragment : Fragment() {
 
@@ -26,20 +32,14 @@ class BookmarkFragment : Fragment() {
         container.bookmarkContainer!!.createSearchResultViewModelFactory()
     }
 
+    private val searchSharedViewModel: SearchSharedViewModel by activityViewModels()
+
     private val adapter: BookmarkAdapter by lazy {
         BookmarkAdapter(
             onRemove = { mediaInfo: MediaInfo ->
                 bookmarkViewModel.remove(mediaInfo)
             }
         )
-    }
-
-    private val bookmarkEventHandler: BookmarkEventHandler by lazy {
-        BookmarkEventHandler()
-    }
-
-    private val searchEventHandler: SearchEventHandler by lazy {
-        SearchEventHandler()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,18 +59,9 @@ class BookmarkFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setEventBus()
         init()
         setRecyclerView()
         setObserve()
-    }
-
-    private fun setEventBus() {
-        bookmarkViewModel.registerEventBus(bookmarkEventHandler, searchEventHandler)
-
-        bookmarkEventHandler.subscribeEvent(viewLifecycleOwner) {
-            bookmarkViewModel.update(it)
-        }
     }
 
     private fun init() {
@@ -84,6 +75,28 @@ class BookmarkFragment : Fragment() {
     private fun setObserve() {
         bookmarkViewModel.bookmarkedDocuments.observe(viewLifecycleOwner) {
             adapter.submitList(it)
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            searchSharedViewModel.bookMarkEvents.flowWithLifecycle(lifecycle)
+                .collectLatest { event ->
+                    when (event) {
+                        is SearchSharedEvent.UpdateBookmark -> {
+                            bookmarkViewModel.update(event)
+                        }
+                    }
+                }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            bookmarkViewModel.event.flowWithLifecycle(lifecycle)
+                .collectLatest { event ->
+                    onEvent(event)
+                }
+        }
+    }
+
+    private fun onEvent(event: BookmarkEvent) {
+        when (event) {
+            is BookmarkEvent.UpdateBookmark -> searchSharedViewModel.updateEvent(event)
         }
     }
 

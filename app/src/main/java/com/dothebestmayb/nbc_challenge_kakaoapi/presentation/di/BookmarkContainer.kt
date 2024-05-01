@@ -11,10 +11,8 @@ class BookmarkContainer(private val appContainer: AppContainer) {
         return object : AbstractSavedStateViewModelFactory() {
             val deleteBookmarkedImageUseCase = appContainer.createDeleteBookmarkedImageUseCase()
             val getAllBookmarkedImageUseCase = appContainer.createGetAllBookmarkedImageUseCase()
-            val insertBookmarkedImageUseCase = appContainer.createInsertBookmarkedImageUseCase()
             val getAllBookmarkedVideoUseCase = appContainer.createGetAllBookmarkedVideoUseCase()
             val deleteBookmarkedVideoUseCase = appContainer.createDeleteBookmarkedVideoUseCase()
-            val insertBookmarkedVideoUseCase = appContainer.createInsertBookmarkedVideoUseCase()
 
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(
@@ -25,10 +23,8 @@ class BookmarkContainer(private val appContainer: AppContainer) {
                 return BookmarkViewModel(
                     deleteBookmarkedImageUseCase,
                     getAllBookmarkedImageUseCase,
-                    insertBookmarkedImageUseCase,
                     getAllBookmarkedVideoUseCase,
                     deleteBookmarkedVideoUseCase,
-                    insertBookmarkedVideoUseCase,
                 ) as T
             }
         }

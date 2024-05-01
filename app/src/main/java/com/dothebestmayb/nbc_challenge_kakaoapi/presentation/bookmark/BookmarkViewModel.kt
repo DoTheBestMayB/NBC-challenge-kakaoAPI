@@ -1,7 +1,6 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.bookmark
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,10 +8,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.DeleteBookmarkedI
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.DeleteBookmarkedVideoUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetAllBookmarkedImageUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetAllBookmarkedVideoUseCase
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedImageUseCase
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedVideoUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.Event
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toWithBookmarked
@@ -25,10 +21,8 @@ import kotlinx.coroutines.launch
 class BookmarkViewModel(
     private val deleteBookmarkedImageUseCase: DeleteBookmarkedImageUseCase,
     private val getAllBookmarkedImageUseCase: GetAllBookmarkedImageUseCase,
-    private val insertBookmarkedImageUseCase: InsertBookmarkedImageUseCase,
     private val getAllBookmarkedVideoUseCase: GetAllBookmarkedVideoUseCase,
     private val deleteBookmarkedVideoUseCase: DeleteBookmarkedVideoUseCase,
-    private val insertBookmarkedVideoUseCase: InsertBookmarkedVideoUseCase,
 ) : ViewModel() {
 
     private val _bookmarkedDocuments = MutableLiveData<Event<List<MediaInfo>>>()
@@ -63,6 +57,7 @@ class BookmarkViewModel(
                 _event.emit(BookmarkEvent.UpdateBookmark(mediaInfo, false))
                 deleteBookmarkedImageUseCase(mediaInfo.toEntity())
             }
+
             is MediaInfo.VideoDocumentStatus -> run {
                 _event.emit(BookmarkEvent.UpdateBookmark(mediaInfo, false))
                 deleteBookmarkedVideoUseCase(mediaInfo.toEntity())

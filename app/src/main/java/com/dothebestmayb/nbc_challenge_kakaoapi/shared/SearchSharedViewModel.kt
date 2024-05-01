@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class SearchSharedViewModel: ViewModel() {
+class SearchSharedViewModel : ViewModel() {
     private val _bookMarkEvents = MutableSharedFlow<SearchSharedEvent>()
     val bookMarkEvents = _bookMarkEvents.asSharedFlow()
 

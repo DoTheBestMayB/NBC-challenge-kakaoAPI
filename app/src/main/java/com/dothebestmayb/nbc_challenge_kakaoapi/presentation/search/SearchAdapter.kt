@@ -15,7 +15,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.AdapterType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 
 class SearchAdapter(
-    private val onBookmarkChanged : (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
+    private val onBookmarkChanged: (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
 ) : ListAdapter<MediaInfo, RecyclerView.ViewHolder>(diff) {
 
     enum class PayLoad {

@@ -60,7 +60,7 @@ class SearchViewModel(
         }
 
         viewModelScope.launch {
-            val videoResponse = async { // 실제로 순차적이 아니라 동시에 하는지 확인하기(이미지도 받아오는지)
+            val videoResponse = async {
                 getKakaoVideoUseCase(query, page)
             }
 

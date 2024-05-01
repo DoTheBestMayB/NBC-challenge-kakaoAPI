@@ -79,20 +79,24 @@ class BookmarkFragment : Fragment() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            searchSharedViewModel.bookMarkEvents.flowWithLifecycle(lifecycle)
-                .collectLatest { event ->
-                    when (event) {
-                        is SearchSharedEvent.UpdateBookmark -> {
-                            bookmarkViewModel.update(event)
+            launch {
+                searchSharedViewModel.bookMarkEvents.flowWithLifecycle(lifecycle)
+                    .collectLatest { event ->
+                        when (event) {
+                            is SearchSharedEvent.UpdateBookmark -> {
+                                bookmarkViewModel.update(event)
+                            }
                         }
                     }
-                }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            bookmarkViewModel.event.flowWithLifecycle(lifecycle)
-                .collectLatest { event ->
-                    onEvent(event)
-                }
+            }
+
+            launch {
+                bookmarkViewModel.event.flowWithLifecycle(lifecycle)
+                    .collectLatest { event ->
+                        onEvent(event)
+                    }
+            }
+
         }
     }
 

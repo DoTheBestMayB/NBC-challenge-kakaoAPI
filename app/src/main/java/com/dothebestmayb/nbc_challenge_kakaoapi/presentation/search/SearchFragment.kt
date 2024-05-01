@@ -91,24 +91,27 @@ class SearchFragment : Fragment() {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            searchViewModel.event.flowWithLifecycle(lifecycle)
-                .collectLatest { event ->
-                    onEvent(event)
-                }
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            searchSharedViewModel.searchMarkEvents.flowWithLifecycle(lifecycle)
-                .collectLatest { event ->
-                    when (event) {
-                        is SearchSharedEvent.UpdateBookmark -> {
-                            searchViewModel.updateBookmarkState(
-                                event.mediaInfo,
-                                event.bookmarked,
-                                true
-                            )
+            launch {
+                searchViewModel.event.flowWithLifecycle(lifecycle)
+                    .collectLatest { event ->
+                        onEvent(event)
+                    }
+            }
+
+            launch {
+                searchSharedViewModel.searchMarkEvents.flowWithLifecycle(lifecycle)
+                    .collectLatest { event ->
+                        when (event) {
+                            is SearchSharedEvent.UpdateBookmark -> {
+                                searchViewModel.updateBookmarkState(
+                                    event.mediaInfo,
+                                    event.bookmarked,
+                                    true
+                                )
+                            }
                         }
                     }
-                }
+            }
         }
     }
 

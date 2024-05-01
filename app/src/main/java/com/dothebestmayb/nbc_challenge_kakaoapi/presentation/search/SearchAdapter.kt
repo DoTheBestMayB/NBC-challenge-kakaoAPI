@@ -13,12 +13,12 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemHeaderBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemVideoSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.AdapterType
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 
 class SearchAdapter(
     private val mediaInfoOnClickListener: MediaInfoOnClickListener,
@@ -28,8 +28,10 @@ class SearchAdapter(
         ONLY_BOOKMARK
     }
 
-    inner class ImageViewHolder(private val binding: ItemImageSearchResultBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ImageViewHolder(
+        private val binding: ItemImageSearchResultBinding,
+        private val onBookmark: (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ImageDocumentStatus) = with(binding) {
             Glide.with(root.context)
@@ -49,16 +51,15 @@ class SearchAdapter(
 
             }
             ivBookmark.setOnClickListener {
-                mediaInfoOnClickListener.onBookmarkChanged(
-                    item,
-                    item.isBookmarked.not()
-                )
+                onBookmark(item, item.isBookmarked.not())
             }
         }
     }
 
-    inner class VideoViewHolder(private val binding: ItemVideoSearchResultBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class VideoViewHolder(
+        private val binding: ItemVideoSearchResultBinding,
+        private val onBookmark: (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: VideoDocumentStatus) = with(binding) {
             Glide.with(root.context)
@@ -81,10 +82,7 @@ class SearchAdapter(
 
             }
             ivBookmark.setOnClickListener {
-                mediaInfoOnClickListener.onBookmarkChanged(
-                    item,
-                    item.isBookmarked.not()
-                )
+                onBookmark(item, item.isBookmarked.not())
             }
         }
 
@@ -119,11 +117,21 @@ class SearchAdapter(
 
         return when (adapterType) {
             AdapterType.IMAGE -> ImageViewHolder(
-                ItemImageSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ItemImageSearchResultBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                ),
+                mediaInfoOnClickListener::onBookmarkChanged,
             )
 
             AdapterType.VIDEO -> VideoViewHolder(
-                ItemVideoSearchResultBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ItemVideoSearchResultBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                ),
+                mediaInfoOnClickListener::onBookmarkChanged,
             )
 
             AdapterType.HEADER -> HeaderViewHolder(

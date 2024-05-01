@@ -21,8 +21,10 @@ class BookmarkAdapter(
     private val mediaInfoOnClickListener: MediaInfoOnClickListener,
 ) : ListAdapter<MediaInfo, RecyclerView.ViewHolder>(diff) {
 
-    inner class ImageViewHolder(private val binding: ItemBookmarkedBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ImageViewHolder(
+        private val binding: ItemBookmarkedBinding,
+        private val onRemove: (mediaInfo: MediaInfo) -> Unit,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ImageDocumentStatus) = with(binding) {
             Glide.with(root.context)
@@ -32,13 +34,15 @@ class BookmarkAdapter(
             tvSiteName.text = item.displaySiteName
 
             ivRemove.setOnClickListener {
-                mediaInfoOnClickListener.remove(item)
+                onRemove(item)
             }
         }
     }
 
-    inner class VideoViewHolder(private val binding: ItemBookmarkedBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class VideoViewHolder(
+        private val binding: ItemBookmarkedBinding,
+        private val onRemove: (mediaInfo: MediaInfo) -> Unit,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: VideoDocumentStatus) = with(binding) {
             Glide.with(root.context)
@@ -48,7 +52,7 @@ class BookmarkAdapter(
             tvSiteName.text = item.author
 
             ivRemove.setOnClickListener {
-                mediaInfoOnClickListener.remove(item)
+                onRemove(item)
             }
         }
     }
@@ -69,11 +73,13 @@ class BookmarkAdapter(
 
         return when (adapterType) {
             AdapterType.IMAGE -> ImageViewHolder(
-                ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+                mediaInfoOnClickListener::remove,
             )
 
             AdapterType.VIDEO -> VideoViewHolder(
-                ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+                mediaInfoOnClickListener::remove,
             )
 
             AdapterType.HEADER -> HeaderViewHolder(

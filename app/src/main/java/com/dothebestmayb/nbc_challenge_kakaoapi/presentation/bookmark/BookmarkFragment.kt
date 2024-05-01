@@ -8,12 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentBookmarkBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.BookmarkContainer
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search.SearchEventHandler
 
-class BookmarkFragment : Fragment(), MediaInfoOnClickListener {
+class BookmarkFragment : Fragment() {
 
     private val container by lazy {
         (requireActivity().application as App).appContainer
@@ -28,7 +27,11 @@ class BookmarkFragment : Fragment(), MediaInfoOnClickListener {
     }
 
     private val adapter: BookmarkAdapter by lazy {
-        BookmarkAdapter(this)
+        BookmarkAdapter(
+            onRemove = { mediaInfo: MediaInfo ->
+                bookmarkViewModel.remove(mediaInfo)
+            }
+        )
     }
 
     private val bookmarkEventHandler: BookmarkEventHandler by lazy {
@@ -37,12 +40,6 @@ class BookmarkFragment : Fragment(), MediaInfoOnClickListener {
 
     private val searchEventHandler: SearchEventHandler by lazy {
         SearchEventHandler()
-    }
-
-    override fun onBookmarkChanged(mediaInfo: MediaInfo, isBookmarked: Boolean) = Unit
-
-    override fun remove(mediaInfo: MediaInfo) {
-        bookmarkViewModel.remove(mediaInfo)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

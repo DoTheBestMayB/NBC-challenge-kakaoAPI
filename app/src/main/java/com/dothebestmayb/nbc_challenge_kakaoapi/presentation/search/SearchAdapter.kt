@@ -18,10 +18,9 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 
 class SearchAdapter(
-    private val mediaInfoOnClickListener: MediaInfoOnClickListener,
+    private val onBookmarkChanged : (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
 ) : ListAdapter<MediaInfo, RecyclerView.ViewHolder>(diff) {
 
     enum class PayLoad {
@@ -122,7 +121,7 @@ class SearchAdapter(
                     parent,
                     false
                 ),
-                mediaInfoOnClickListener::onBookmarkChanged,
+                onBookmarkChanged,
             )
 
             AdapterType.VIDEO -> VideoViewHolder(
@@ -131,7 +130,7 @@ class SearchAdapter(
                     parent,
                     false
                 ),
-                mediaInfoOnClickListener::onBookmarkChanged,
+                onBookmarkChanged,
             )
 
             AdapterType.HEADER -> HeaderViewHolder(

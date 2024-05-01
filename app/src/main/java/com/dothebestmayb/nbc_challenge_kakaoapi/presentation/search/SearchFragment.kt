@@ -10,12 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.bookmark.BookmarkEventHandler
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.SearchContainer
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 
-class SearchFragment : Fragment(), MediaInfoOnClickListener {
+class SearchFragment : Fragment() {
 
     private val container by lazy {
         (requireActivity().application as App).appContainer
@@ -26,7 +25,11 @@ class SearchFragment : Fragment(), MediaInfoOnClickListener {
         get() = _binding!!
 
     private val adapter: SearchAdapter by lazy {
-        SearchAdapter(this)
+        SearchAdapter(
+            onBookmarkChanged = { mediaInfo: MediaInfo, isBookmarked: Boolean ->
+                searchViewModel.updateBookmarkState(mediaInfo, isBookmarked, false)
+            }
+        )
     }
 
     private val searchViewModel: SearchViewModel by viewModels {
@@ -41,12 +44,6 @@ class SearchFragment : Fragment(), MediaInfoOnClickListener {
     private val searchEventHandler: SearchEventHandler by lazy {
         SearchEventHandler()
     }
-
-    override fun onBookmarkChanged(mediaInfo: MediaInfo, isBookmarked: Boolean) {
-        searchViewModel.updateBookmarkState(mediaInfo, isBookmarked, false)
-    }
-
-    override fun remove(mediaInfo: MediaInfo) = Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -10,7 +10,6 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemBookmarkedBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemHeaderBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.AdapterType
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.MediaInfoOnClickListener
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
@@ -18,7 +17,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
 
 class BookmarkAdapter(
-    private val mediaInfoOnClickListener: MediaInfoOnClickListener,
+    private val onRemove: (mediaInfo: MediaInfo) -> Unit,
 ) : ListAdapter<MediaInfo, RecyclerView.ViewHolder>(diff) {
 
     class ImageViewHolder(
@@ -74,12 +73,12 @@ class BookmarkAdapter(
         return when (adapterType) {
             AdapterType.IMAGE -> ImageViewHolder(
                 ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-                mediaInfoOnClickListener::remove,
+                onRemove,
             )
 
             AdapterType.VIDEO -> VideoViewHolder(
                 ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false),
-                mediaInfoOnClickListener::remove,
+                onRemove,
             )
 
             AdapterType.HEADER -> HeaderViewHolder(

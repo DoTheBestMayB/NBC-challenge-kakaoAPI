@@ -38,7 +38,7 @@ class BookmarkViewModel(
                 getAllBookmarkedImageUseCase().map { it.toWithBookmarked(true) }
             }
             val videos = getAllBookmarkedVideoUseCase().map { it.toWithBookmarked(true) }
-            _bookmarkedDocuments.postValue(Event(images.await() + videos))
+            _bookmarkedDocuments.value = Event(images.await() + videos)
         }
     }
 
@@ -46,7 +46,7 @@ class BookmarkViewModel(
         val values = _bookmarkedDocuments.value?.peekContent()?.filter {
             it.thumbnailUrl != mediaInfo.thumbnailUrl
         } ?: emptyList()
-        _bookmarkedDocuments.postValue(Event(values))
+        _bookmarkedDocuments.value = Event(values)
 
         if (isUpdateAtRoom.not()) {
             return@launch
@@ -87,6 +87,6 @@ class BookmarkViewModel(
         if (isFind.not()) {
             values.add(mediaInfo)
         }
-        _bookmarkedDocuments.postValue(Event(values))
+        _bookmarkedDocuments.value = Event(values)
     }
 }

@@ -89,7 +89,7 @@ class SearchViewModel(
             }.onException {
                 _error.value = "${it.message}"
             }
-            _results.postValue(Event(results.sortedByDescending { it.dateTime }))
+            _results.value = Event(results.sortedByDescending { it.dateTime })
         }
     }
 

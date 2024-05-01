@@ -193,7 +193,7 @@ class SearchViewModel(
             _event.emit(SearchEvent.UpdateBookmark(videoDocumentStatus, bookmarked))
 
             if (bookmarked) {
-                if (!checkImageIsBookmarkedUseCase(entity.url)) {
+                if (!checkVideoIsBookmarkedUseCase(entity.url)) {
                     insertBookmarkedVideoUseCase(listOf(entity))
                 }
             } else {

@@ -11,14 +11,13 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetAllBookmarkedI
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetAllBookmarkedVideoUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedImageUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedVideoUseCase
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.Event
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toWithBookmarked
 import com.dothebestmayb.nbc_challenge_kakaoapi.shared.SearchSharedEvent
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -32,34 +31,8 @@ class BookmarkViewModel(
     private val insertBookmarkedVideoUseCase: InsertBookmarkedVideoUseCase,
 ) : ViewModel() {
 
-    private val imageDocuments = MutableLiveData<List<ImageDocumentStatus>>()
-    private val videoDocuments = MutableLiveData<List<VideoDocumentStatus>>()
-
-    private val _bookmarkedDocuments = MediatorLiveData<List<MediaInfo>>().apply {
-        addSource(imageDocuments) {
-            val imageValues: List<MediaInfo> = it?.let { documentStatuses ->
-                listOf(HeaderStatus(HeaderType.IMAGE)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
-            } ?: emptyList()
-
-            val videoValues: List<MediaInfo> = videoDocuments.value?.let { documentStatuses ->
-                listOf(HeaderStatus(HeaderType.VIDEO)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
-            } ?: emptyList()
-
-            value = imageValues + videoValues
-        }
-        addSource(videoDocuments) {
-            val imageValues: List<MediaInfo> = imageDocuments.value?.let { documentStatuses ->
-                listOf(HeaderStatus(HeaderType.IMAGE)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
-            } ?: emptyList()
-
-            val videoValues: List<MediaInfo> = it?.let { documentStatuses ->
-                listOf(HeaderStatus(HeaderType.VIDEO)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
-            } ?: emptyList()
-
-            value = imageValues + videoValues
-        }
-    }
-    val bookmarkedDocuments: LiveData<List<MediaInfo>>
+    private val _bookmarkedDocuments = MutableLiveData<Event<List<MediaInfo>>>()
+    val bookmarkedDocuments: LiveData<Event<List<MediaInfo>>>
         get() = _bookmarkedDocuments
 
     private val _event = MutableSharedFlow<BookmarkEvent>()
@@ -67,96 +40,58 @@ class BookmarkViewModel(
 
     fun fetch() {
         viewModelScope.launch {
-            imageDocuments.value =
+            val images = async {
                 getAllBookmarkedImageUseCase().map { it.toWithBookmarked(true) }
-            videoDocuments.value =
-                getAllBookmarkedVideoUseCase().map { it.toWithBookmarked(true) }
+            }
+            val videos = getAllBookmarkedVideoUseCase().map { it.toWithBookmarked(true) }
+            _bookmarkedDocuments.postValue(Event(images.await() + videos))
         }
     }
 
-    fun remove(mediaInfo: MediaInfo, isUpdateAtRoom: Boolean = true) {
+    fun remove(mediaInfo: MediaInfo, isUpdateAtRoom: Boolean = true) = viewModelScope.launch {
+        val values = _bookmarkedDocuments.value?.peekContent()?.filter {
+            it.thumbnailUrl != mediaInfo.thumbnailUrl
+        } ?: emptyList()
+        _bookmarkedDocuments.postValue(Event(values))
+
+        if (isUpdateAtRoom.not()) {
+            return@launch
+        }
+
         when (mediaInfo) {
-            is ImageDocumentStatus -> remove(mediaInfo, isUpdateAtRoom)
-            is VideoDocumentStatus -> remove(mediaInfo, isUpdateAtRoom)
-            is HeaderStatus -> Unit
-        }
-    }
-
-    private fun remove(item: ImageDocumentStatus, isUpdateAtRoom: Boolean = true) {
-        if (isUpdateAtRoom) {
-            viewModelScope.launch {
-                _event.emit(BookmarkEvent.UpdateBookmark(item, false))
-                deleteBookmarkedImageUseCase(item.toEntity())
+            is MediaInfo.ImageDocumentStatus -> run {
+                _event.emit(BookmarkEvent.UpdateBookmark(mediaInfo, false))
+                deleteBookmarkedImageUseCase(mediaInfo.toEntity())
+            }
+            is MediaInfo.VideoDocumentStatus -> run {
+                _event.emit(BookmarkEvent.UpdateBookmark(mediaInfo, false))
+                deleteBookmarkedVideoUseCase(mediaInfo.toEntity())
             }
         }
-
-        val values = imageDocuments.value?.toMutableList() ?: return
-        values.removeIf {
-            it.imageUrl == item.imageUrl
-        }
-        imageDocuments.value = values
-    }
-
-    private fun remove(item: VideoDocumentStatus, isUpdateAtRoom: Boolean = true) {
-        if (isUpdateAtRoom) {
-            viewModelScope.launch {
-                _event.emit(BookmarkEvent.UpdateBookmark(item, false))
-
-                deleteBookmarkedVideoUseCase(item.toEntity())
-            }
-        }
-        val values = videoDocuments.value?.toMutableList() ?: return
-        values.removeIf {
-            it.url == item.url
-        }
-        videoDocuments.value = values
     }
 
     fun update(searchSharedEvent: SearchSharedEvent.UpdateBookmark) {
         if (searchSharedEvent.bookmarked) {
-            add(searchSharedEvent.mediaInfo, false)
+            add(searchSharedEvent.mediaInfo)
         } else {
             remove(searchSharedEvent.mediaInfo, false)
         }
     }
 
-    fun add(mediaInfo: MediaInfo, isUpdateAtRoom: Boolean = true) {
-        when (mediaInfo) {
-            is ImageDocumentStatus -> add(mediaInfo, isUpdateAtRoom)
-            is VideoDocumentStatus -> add(mediaInfo, isUpdateAtRoom)
-            is HeaderStatus -> Unit
-        }
-    }
-
-    private fun add(item: ImageDocumentStatus, isUpdateAtRoom: Boolean = true) {
-        if (isUpdateAtRoom) {
-            viewModelScope.launch {
-                insertBookmarkedImageUseCase(listOf(item.toEntity()))
+    private fun add(mediaInfo: MediaInfo) = viewModelScope.launch {
+        var isFind = false
+        val values = _bookmarkedDocuments.value?.peekContent()?.map {
+            if (it.thumbnailUrl == mediaInfo.thumbnailUrl) {
+                isFind = true
+                mediaInfo
+            } else {
+                it
             }
-        }
-        val values = imageDocuments.value?.toMutableList() ?: return
-        val idx = values.indexOfFirst { it.imageUrl == item.imageUrl }
-        if (idx == -1) {
-            values.add(item)
-        } else {
-            values[idx] = item
-        }
-        imageDocuments.value = values
-    }
+        }?.toMutableList() ?: mutableListOf()
 
-    private fun add(item: VideoDocumentStatus, isUpdateAtRoom: Boolean = true) {
-        if (isUpdateAtRoom) {
-            viewModelScope.launch {
-                insertBookmarkedVideoUseCase(listOf(item.toEntity()))
-            }
+        if (isFind.not()) {
+            values.add(mediaInfo)
         }
-        val values = videoDocuments.value?.toMutableList() ?: return
-        val idx = values.indexOfFirst { it.url == item.url }
-        if (idx == -1) {
-            values.add(item)
-        } else {
-            values[idx] = item
-        }
-        videoDocuments.value = values
+        _bookmarkedDocuments.postValue(Event(values))
     }
 }

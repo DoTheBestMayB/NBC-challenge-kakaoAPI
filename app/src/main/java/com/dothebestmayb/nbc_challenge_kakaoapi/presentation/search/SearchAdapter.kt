@@ -9,15 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.DateUtil
-import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemHeaderBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemVideoSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.AdapterType
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
 
 class SearchAdapter(
     private val onBookmarkChanged : (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
@@ -32,17 +27,17 @@ class SearchAdapter(
         private val onBookmark: (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: ImageDocumentStatus) = with(binding) {
+        fun bind(item: MediaInfo.ImageDocumentStatus) = with(binding) {
             Glide.with(root.context)
                 .load(item.imageUrl)
                 .placeholder(R.drawable.transparent_background)
                 .into(ivThumbnail)
-            tvUploadTime.text = DateUtil.simpleFormatDate(item.datetime)
+            tvUploadTime.text = DateUtil.simpleFormatDate(item.dateTime)
             tvSiteName.text = item.displaySiteName
             changeBookmarkInfo(item)
         }
 
-        fun changeBookmarkInfo(item: ImageDocumentStatus) = with(binding) {
+        fun changeBookmarkInfo(item: MediaInfo.ImageDocumentStatus) = with(binding) {
             if (item.isBookmarked) {
                 ivBookmark.setImageResource(R.drawable.baseline_bookmark_added_24)
             } else {
@@ -60,20 +55,20 @@ class SearchAdapter(
         private val onBookmark: (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: VideoDocumentStatus) = with(binding) {
+        fun bind(item: MediaInfo.VideoDocumentStatus) = with(binding) {
             Glide.with(root.context)
-                .load(item.thumbnail)
+                .load(item.thumbnailUrl)
                 .placeholder(R.drawable.transparent_background)
                 .into(ivThumbNail)
 
             setPlayTime(item.playTime, tvPlayTime)
             tvTitle.text = item.title
             tvSiteName.text = item.author
-            tvUploadTime.text = DateUtil.simpleFormatDate(item.datetime)
+            tvUploadTime.text = DateUtil.simpleFormatDate(item.dateTime)
             changeBookmarkInfo(item)
         }
 
-        fun changeBookmarkInfo(item: VideoDocumentStatus) = with(binding) {
+        fun changeBookmarkInfo(item: MediaInfo.VideoDocumentStatus) = with(binding) {
             if (item.isBookmarked) {
                 ivBookmark.setImageResource(R.drawable.baseline_bookmark_added_24)
             } else {
@@ -100,16 +95,6 @@ class SearchAdapter(
         }
     }
 
-    class HeaderViewHolder(private val binding: ItemHeaderBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: HeaderStatus) = with(binding) {
-            tvName.text = when (item.type) {
-                HeaderType.IMAGE -> binding.root.context.getString(R.string.image)
-                HeaderType.VIDEO -> binding.root.context.getString(R.string.video)
-            }
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val adapterType =
             AdapterType.from(viewType) ?: throw IllegalArgumentException("Not implemented yet")
@@ -132,18 +117,13 @@ class SearchAdapter(
                 ),
                 onBookmarkChanged,
             )
-
-            AdapterType.HEADER -> HeaderViewHolder(
-                ItemHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            )
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ImageViewHolder -> holder.bind(getItem(position) as ImageDocumentStatus)
-            is VideoViewHolder -> holder.bind(getItem(position) as VideoDocumentStatus)
-            is HeaderViewHolder -> holder.bind(getItem(position) as HeaderStatus)
+            is ImageViewHolder -> holder.bind(getItem(position) as MediaInfo.ImageDocumentStatus)
+            is VideoViewHolder -> holder.bind(getItem(position) as MediaInfo.VideoDocumentStatus)
         }
     }
 
@@ -160,8 +140,8 @@ class SearchAdapter(
             when (payload) {
                 PayLoad.ONLY_BOOKMARK -> {
                     when (holder) {
-                        is ImageViewHolder -> holder.changeBookmarkInfo(getItem(position) as ImageDocumentStatus)
-                        is VideoViewHolder -> holder.changeBookmarkInfo(getItem(position) as VideoDocumentStatus)
+                        is ImageViewHolder -> holder.changeBookmarkInfo(getItem(position) as MediaInfo.ImageDocumentStatus)
+                        is VideoViewHolder -> holder.changeBookmarkInfo(getItem(position) as MediaInfo.VideoDocumentStatus)
                     }
                 }
 
@@ -175,9 +155,8 @@ class SearchAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is ImageDocumentStatus -> AdapterType.IMAGE.viewTypeValue
-            is VideoDocumentStatus -> AdapterType.VIDEO.viewTypeValue
-            is HeaderStatus -> AdapterType.HEADER.viewTypeValue
+            is MediaInfo.ImageDocumentStatus -> AdapterType.IMAGE.viewTypeValue
+            is MediaInfo.VideoDocumentStatus -> AdapterType.VIDEO.viewTypeValue
         }
     }
 
@@ -185,12 +164,10 @@ class SearchAdapter(
 
         val diff = object : DiffUtil.ItemCallback<MediaInfo>() {
             override fun areItemsTheSame(oldItem: MediaInfo, newItem: MediaInfo): Boolean {
-                return if (oldItem is ImageDocumentStatus && newItem is ImageDocumentStatus) {
+                return if (oldItem is MediaInfo.ImageDocumentStatus && newItem is MediaInfo.ImageDocumentStatus) {
                     oldItem.docUrl == newItem.docUrl
-                } else if (oldItem is VideoDocumentStatus && newItem is VideoDocumentStatus) {
+                } else if (oldItem is MediaInfo.VideoDocumentStatus && newItem is MediaInfo.VideoDocumentStatus) {
                     oldItem.url == newItem.url
-                } else if (oldItem is HeaderStatus && newItem is HeaderStatus) {
-                    oldItem.type == newItem.type
                 } else {
                     false
                 }
@@ -202,13 +179,13 @@ class SearchAdapter(
 
             // 북마킹 여부만 바뀌었는지를 판별하기 위함
             override fun getChangePayload(oldItem: MediaInfo, newItem: MediaInfo): Any? {
-                if (oldItem is ImageDocumentStatus && newItem is ImageDocumentStatus && checkDiffOnlyBookmark(
+                if (oldItem is MediaInfo.ImageDocumentStatus && newItem is MediaInfo.ImageDocumentStatus && checkDiffOnlyBookmark(
                         oldItem,
                         newItem
                     )
                 ) {
                     return PayLoad.ONLY_BOOKMARK
-                } else if (oldItem is VideoDocumentStatus && newItem is VideoDocumentStatus && checkDiffOnlyBookmark(
+                } else if (oldItem is MediaInfo.VideoDocumentStatus && newItem is MediaInfo.VideoDocumentStatus && checkDiffOnlyBookmark(
                         oldItem,
                         newItem
                     )
@@ -219,8 +196,8 @@ class SearchAdapter(
             }
 
             private fun checkDiffOnlyBookmark(
-                oldItem: ImageDocumentStatus,
-                newItem: ImageDocumentStatus
+                oldItem: MediaInfo.ImageDocumentStatus,
+                newItem: MediaInfo.ImageDocumentStatus
             ): Boolean {
                 if (oldItem.collection != newItem.collection) return false
                 if (oldItem.thumbnailUrl != newItem.thumbnailUrl) return false
@@ -229,19 +206,19 @@ class SearchAdapter(
                 if (oldItem.height != newItem.height) return false
                 if (oldItem.displaySiteName != newItem.displaySiteName) return false
                 if (oldItem.docUrl != newItem.docUrl) return false
-                if (oldItem.datetime != newItem.datetime) return false
+                if (oldItem.dateTime != newItem.dateTime) return false
                 return oldItem.isBookmarked != newItem.isBookmarked
             }
 
             private fun checkDiffOnlyBookmark(
-                oldItem: VideoDocumentStatus,
-                newItem: VideoDocumentStatus
+                oldItem: MediaInfo.VideoDocumentStatus,
+                newItem: MediaInfo.VideoDocumentStatus
             ): Boolean {
                 if (oldItem.title != newItem.title) return false
                 if (oldItem.url != newItem.url) return false
-                if (oldItem.datetime != newItem.datetime) return false
+                if (oldItem.dateTime != newItem.dateTime) return false
                 if (oldItem.playTime != newItem.playTime) return false
-                if (oldItem.thumbnail != newItem.thumbnail) return false
+                if (oldItem.thumbnailUrl != newItem.thumbnailUrl) return false
                 if (oldItem.author != newItem.author) return false
                 return oldItem.isBookmarked != newItem.isBookmarked
             }

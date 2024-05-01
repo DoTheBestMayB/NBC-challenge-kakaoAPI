@@ -10,5 +10,5 @@ data class ImageDocumentEntity(
     val height: Int,
     val displaySiteName: String,
     val docUrl: String,
-    val datetime: Date,
+    val dateTime: Date,
 )

@@ -2,10 +2,9 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageDocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoDocumentEntity
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 
-fun ImageDocumentEntity.toWithBookmarked(isBookmarked: Boolean) = ImageDocumentStatus(
+fun ImageDocumentEntity.toWithBookmarked(isBookmarked: Boolean) = MediaInfo.ImageDocumentStatus(
     collection = collection,
     thumbnailUrl = thumbnailUrl,
     imageUrl = imageUrl,
@@ -13,11 +12,11 @@ fun ImageDocumentEntity.toWithBookmarked(isBookmarked: Boolean) = ImageDocumentS
     height = height,
     displaySiteName = displaySiteName,
     docUrl = docUrl,
-    datetime = datetime,
+    dateTime = dateTime,
     isBookmarked = isBookmarked,
 )
 
-fun ImageDocumentStatus.toEntity() = ImageDocumentEntity(
+fun MediaInfo.ImageDocumentStatus.toEntity() = ImageDocumentEntity(
     collection = collection,
     thumbnailUrl = thumbnailUrl,
     imageUrl = imageUrl,
@@ -25,24 +24,24 @@ fun ImageDocumentStatus.toEntity() = ImageDocumentEntity(
     height = height,
     displaySiteName = displaySiteName,
     docUrl = docUrl,
-    datetime = datetime
+    dateTime = dateTime
 )
 
-fun VideoDocumentEntity.toWithBookmarked(isBookmarked: Boolean) = VideoDocumentStatus(
+fun VideoDocumentEntity.toWithBookmarked(isBookmarked: Boolean) = MediaInfo.VideoDocumentStatus(
     title = title,
     url = url,
-    datetime = datetime,
+    dateTime = dateTime,
     playTime = playTime,
-    thumbnail = thumbnail,
+    thumbnailUrl = thumbnail,
     author = author,
     isBookmarked = isBookmarked,
 )
 
-fun VideoDocumentStatus.toEntity() = VideoDocumentEntity(
+fun MediaInfo.VideoDocumentStatus.toEntity() = VideoDocumentEntity(
     title = title,
     url = url,
-    datetime = datetime,
+    dateTime = dateTime,
     playTime = playTime,
-    thumbnail = thumbnail,
+    thumbnail = thumbnailUrl,
     author = author,
 )

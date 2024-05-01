@@ -34,7 +34,7 @@ fun ImageDocumentResponse.toEntity() = ImageDocumentEntity(
     height = height,
     displaySiteName = displaySiteName,
     docUrl = docUrl,
-    datetime = datetime
+    dateTime = datetime
 )
 
 fun ImageDocument.toEntity() = ImageDocumentEntity(
@@ -45,7 +45,7 @@ fun ImageDocument.toEntity() = ImageDocumentEntity(
     height = height,
     displaySiteName = displaySiteName,
     docUrl = docUrl,
-    datetime = datetime
+    dateTime = datetime
 )
 
 fun ImageDocumentEntity.toData() = ImageDocument(
@@ -56,7 +56,7 @@ fun ImageDocumentEntity.toData() = ImageDocument(
     height = height,
     displaySiteName = displaySiteName,
     docUrl = docUrl,
-    datetime = datetime
+    datetime = dateTime
 )
 
 fun VideoSearchResponse.toEntity() = VideoSearchEntity(
@@ -68,7 +68,7 @@ fun VideoSearchResponse.toEntity() = VideoSearchEntity(
 fun VideoDocumentResponse.toEntity() = VideoDocumentEntity(
     title = title,
     url = url,
-    datetime = datetime,
+    dateTime = datetime,
     playTime = playTime,
     thumbnail = thumbnail,
     author = author
@@ -77,7 +77,7 @@ fun VideoDocumentResponse.toEntity() = VideoDocumentEntity(
 fun VideoDocument.toEntity() = VideoDocumentEntity(
     title = title,
     url = url,
-    datetime = datetime,
+    dateTime = datetime,
     playTime = playTime,
     thumbnail = thumbnail,
     author = author
@@ -86,7 +86,7 @@ fun VideoDocument.toEntity() = VideoDocumentEntity(
 fun VideoDocumentEntity.toData() = VideoDocument(
     title = title,
     url = url,
-    datetime = datetime,
+    datetime = dateTime,
     playTime = playTime,
     thumbnail = thumbnail,
     author = author

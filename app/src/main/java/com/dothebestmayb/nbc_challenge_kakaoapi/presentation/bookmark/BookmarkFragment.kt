@@ -74,7 +74,9 @@ class BookmarkFragment : Fragment() {
 
     private fun setObserve() {
         bookmarkViewModel.bookmarkedDocuments.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+            it.getContentIfNotHandled()?.let { item ->
+                adapter.submitList(item)
+            }
         }
         viewLifecycleOwner.lifecycleScope.launch {
             searchSharedViewModel.bookMarkEvents.flowWithLifecycle(lifecycle)

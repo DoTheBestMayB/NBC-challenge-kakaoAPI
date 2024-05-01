@@ -5,7 +5,7 @@ import java.util.Date
 data class VideoDocumentEntity(
     val title: String,
     val url: String,
-    val datetime: Date,
+    val dateTime: Date,
     val playTime: Int,
     val thumbnail: String,
     val author: String,

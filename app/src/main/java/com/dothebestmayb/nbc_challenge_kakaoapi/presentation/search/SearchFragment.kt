@@ -78,10 +78,14 @@ class SearchFragment : Fragment() {
 
     private fun setObserve() {
         searchViewModel.query.observe(viewLifecycleOwner) {
-            searchViewModel.fetchDataFromServer()
+            it.getContentIfNotHandled()?.let { query ->
+                searchViewModel.fetchDataFromServer(query)
+            }
         }
         searchViewModel.results.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+            it.getContentIfNotHandled()?.let { mediaInfo ->
+                adapter.submitList(mediaInfo)
+            }
         }
         searchViewModel.error.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()

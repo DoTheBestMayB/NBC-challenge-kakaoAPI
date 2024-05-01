@@ -8,13 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemBookmarkedBinding
-import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemHeaderBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.AdapterType
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
 
 class BookmarkAdapter(
     private val onRemove: (mediaInfo: MediaInfo) -> Unit,
@@ -25,7 +20,7 @@ class BookmarkAdapter(
         private val onRemove: (mediaInfo: MediaInfo) -> Unit,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: ImageDocumentStatus) = with(binding) {
+        fun bind(item: MediaInfo.ImageDocumentStatus) = with(binding) {
             Glide.with(root.context)
                 .load(item.imageUrl)
                 .placeholder(R.drawable.transparent_background)
@@ -43,25 +38,15 @@ class BookmarkAdapter(
         private val onRemove: (mediaInfo: MediaInfo) -> Unit,
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: VideoDocumentStatus) = with(binding) {
+        fun bind(item: MediaInfo.VideoDocumentStatus) = with(binding) {
             Glide.with(root.context)
-                .load(item.thumbnail)
+                .load(item.thumbnailUrl)
                 .placeholder(R.drawable.transparent_background)
                 .into(ivThumbnail)
             tvSiteName.text = item.author
 
             ivRemove.setOnClickListener {
                 onRemove(item)
-            }
-        }
-    }
-
-    class HeaderViewHolder(private val binding: ItemHeaderBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: HeaderStatus) = with(binding) {
-            tvName.text = when (item.type) {
-                HeaderType.IMAGE -> binding.root.context.getString(R.string.image)
-                HeaderType.VIDEO -> binding.root.context.getString(R.string.video)
             }
         }
     }
@@ -80,26 +65,20 @@ class BookmarkAdapter(
                 ItemBookmarkedBinding.inflate(LayoutInflater.from(parent.context), parent, false),
                 onRemove,
             )
-
-            AdapterType.HEADER -> HeaderViewHolder(
-                ItemHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            )
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ImageViewHolder -> holder.bind(getItem(position) as ImageDocumentStatus)
-            is VideoViewHolder -> holder.bind(getItem(position) as VideoDocumentStatus)
-            is HeaderViewHolder -> holder.bind(getItem(position) as HeaderStatus)
+            is ImageViewHolder -> holder.bind(getItem(position) as MediaInfo.ImageDocumentStatus)
+            is VideoViewHolder -> holder.bind(getItem(position) as MediaInfo.VideoDocumentStatus)
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is ImageDocumentStatus -> AdapterType.IMAGE.viewTypeValue
-            is VideoDocumentStatus -> AdapterType.VIDEO.viewTypeValue
-            is HeaderStatus -> AdapterType.HEADER.viewTypeValue
+            is MediaInfo.ImageDocumentStatus -> AdapterType.IMAGE.viewTypeValue
+            is MediaInfo.VideoDocumentStatus -> AdapterType.VIDEO.viewTypeValue
         }
     }
 
@@ -107,12 +86,10 @@ class BookmarkAdapter(
 
         val diff = object : DiffUtil.ItemCallback<MediaInfo>() {
             override fun areItemsTheSame(oldItem: MediaInfo, newItem: MediaInfo): Boolean {
-                return if (oldItem is ImageDocumentStatus && newItem is ImageDocumentStatus) {
+                return if (oldItem is MediaInfo.ImageDocumentStatus && newItem is MediaInfo.ImageDocumentStatus) {
                     oldItem.docUrl == newItem.docUrl
-                } else if (oldItem is VideoDocumentStatus && newItem is VideoDocumentStatus) {
+                } else if (oldItem is MediaInfo.VideoDocumentStatus && newItem is MediaInfo.VideoDocumentStatus) {
                     oldItem.url == newItem.url
-                } else if (oldItem is HeaderStatus && newItem is HeaderStatus) {
-                    oldItem.type == newItem.type
                 } else {
                     false
                 }

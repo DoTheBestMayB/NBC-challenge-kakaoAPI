@@ -1,7 +1,6 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,11 +15,8 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetKakaoImageUseC
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.GetKakaoVideoUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedImageUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.InsertBookmarkedVideoUseCase
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderStatus
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.HeaderType
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.ImageDocumentStatus
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.Event
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.VideoDocumentStatus
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.debounce
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toWithBookmarked
@@ -40,43 +36,16 @@ class SearchViewModel(
     private val insertBookmarkedVideoUseCase: InsertBookmarkedVideoUseCase,
 ) : ViewModel() {
 
-    private val images = MutableLiveData<List<ImageDocumentStatus>>()
-    private val videos = MutableLiveData<List<VideoDocumentStatus>>()
-
-    private val _results = MediatorLiveData<List<MediaInfo>>().apply {
-        addSource(images) {
-            val imageValues: List<MediaInfo> = it?.let { documentStatuses ->
-                listOf(HeaderStatus(HeaderType.IMAGE)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
-            } ?: emptyList()
-
-            val videoValues: List<MediaInfo> = videos.value?.let { documentStatuses ->
-                listOf(HeaderStatus(HeaderType.VIDEO)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
-            } ?: emptyList()
-
-            value = imageValues + videoValues
-        }
-
-        addSource(videos) {
-            val imageValues: List<MediaInfo> = images.value?.let { documentStatuses ->
-                listOf(HeaderStatus(HeaderType.IMAGE)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
-            } ?: emptyList()
-
-            val videoValues: List<MediaInfo> = it?.let { documentStatuses ->
-                listOf(HeaderStatus(HeaderType.VIDEO)) as List<MediaInfo> + documentStatuses as List<MediaInfo>
-            } ?: emptyList()
-
-            value = imageValues + videoValues
-        }
-    }
-    val results: LiveData<List<MediaInfo>>
+    private val _results = MutableLiveData<Event<List<MediaInfo>>>()
+    val results: LiveData<Event<List<MediaInfo>>>
         get() = _results
 
     private val _error = MutableLiveData<String>()
     val error: LiveData<String>
         get() = _error
 
-    private val _query = MutableLiveData<String>()
-    val query: LiveData<String>
+    private val _query = MutableLiveData<Event<String>>()
+    val query: LiveData<Event<String>>
         get() = _query.debounce(DEBOUNCE_TIME)
 
     private var page = 1
@@ -84,12 +53,9 @@ class SearchViewModel(
     private val _event = MutableSharedFlow<SearchEvent>()
     val event = _event.asSharedFlow()
 
-    fun fetchDataFromServer() {
-        val query = _query.value
-
-        if (query.isNullOrBlank()) {
-            images.value = emptyList()
-            videos.value = emptyList()
+    fun fetchDataFromServer(query: String) {
+        if (query.isBlank()) {
+            _results.value = Event(emptyList())
             return
         }
 
@@ -98,13 +64,15 @@ class SearchViewModel(
                 getKakaoVideoUseCase(query, page)
             }
 
+            val results = mutableListOf<MediaInfo>()
+
             val imageResponse = getKakaoImageUseCase(query, page)
 
             imageResponse.onSuccess { imageSearchEntity ->
                 val result = imageSearchEntity.documents.map {
                     it.toWithBookmarked(checkImageIsBookmarkedUseCase(it.imageUrl))
                 }
-                images.value = result
+                results.addAll(result)
             }.onError { code, message ->
                 _error.value = "$code $message"
             }.onException {
@@ -115,90 +83,78 @@ class SearchViewModel(
                 val result = videoSearchEntity.documents.map {
                     it.toWithBookmarked(checkVideoIsBookmarkedUseCase(it.url))
                 }
-                videos.value = result
+                results.addAll(result)
             }.onError { code, message ->
                 _error.value = "$code $message"
             }.onException {
                 _error.value = "${it.message}"
             }
+            _results.postValue(Event(results.sortedBy { it.dateTime }))
         }
     }
 
     fun updateQuery(query: String) {
-        _query.value = query
+        _query.value = Event(query)
     }
 
     fun updateBookmarkState(mediaInfo: MediaInfo, bookmarked: Boolean, isFromBus: Boolean) {
+        updateItem(mediaInfo, bookmarked)
+        deliverEvent(mediaInfo, bookmarked, isFromBus)
         when (mediaInfo) {
-            is ImageDocumentStatus -> update(mediaInfo, bookmarked, isFromBus)
-            is VideoDocumentStatus -> update(mediaInfo, bookmarked, isFromBus)
-            is HeaderStatus -> Unit
+            is MediaInfo.ImageDocumentStatus -> updateDB(mediaInfo, bookmarked)
+            is MediaInfo.VideoDocumentStatus -> updateDB(mediaInfo, bookmarked)
         }
     }
 
-    private fun update(
-        imageDocumentStatus: ImageDocumentStatus,
+    private fun updateItem(mediaInfo: MediaInfo, bookmarked: Boolean) {
+        val results = _results.value?.peekContent()?.map {
+            if (it.thumbnailUrl == mediaInfo.thumbnailUrl) {
+                when (it) {
+                    is MediaInfo.ImageDocumentStatus -> it.copy(isBookmarked = bookmarked)
+                    is MediaInfo.VideoDocumentStatus -> it.copy(isBookmarked = bookmarked)
+                }
+            } else {
+                it
+            }
+        } ?: emptyList()
+        _results.value = Event(results)
+    }
+
+    private fun deliverEvent(mediaInfo: MediaInfo, bookmarked: Boolean, isFromBus: Boolean) =
+        viewModelScope.launch {
+            if (isFromBus) {
+                return@launch
+            }
+            _event.emit(SearchEvent.UpdateBookmark(mediaInfo, bookmarked))
+        }
+
+    private fun updateDB(
+        imageDocumentStatus: MediaInfo.ImageDocumentStatus,
         bookmarked: Boolean,
-        isFromBus: Boolean
-    ) {
+    ) = viewModelScope.launch {
         val entity = imageDocumentStatus.toEntity()
 
-        // 북마킹 여부 업데이트
-        images.value = images.value?.map {
-            if (it.imageUrl == entity.imageUrl) {
-                it.copy(isBookmarked = bookmarked)
-            } else {
-                it
+        if (bookmarked) {
+            if (!checkImageIsBookmarkedUseCase(entity.imageUrl)) {
+                insertBookmarkedImageUseCase(listOf(entity))
             }
-        }
-
-        if (isFromBus) {
-            return
-        }
-
-        viewModelScope.launch {
-            _event.emit(SearchEvent.UpdateBookmark(imageDocumentStatus, bookmarked))
-
-            if (bookmarked) {
-                if (!checkImageIsBookmarkedUseCase(entity.imageUrl)) {
-                    insertBookmarkedImageUseCase(listOf(entity))
-                }
-            } else {
-                deleteBookmarkedImageUseCase(entity)
-            }
+        } else {
+            deleteBookmarkedImageUseCase(entity)
         }
     }
 
-    private fun update(
-        videoDocumentStatus: VideoDocumentStatus,
+    private fun updateDB(
+        videoDocumentStatus: MediaInfo.VideoDocumentStatus,
         bookmarked: Boolean,
-        isFromBus: Boolean
-    ) {
+    ) = viewModelScope.launch {
         val entity = videoDocumentStatus.toEntity()
 
-        // 북마킹 여부 업데이트
-        videos.value = videos.value?.map {
-            if (it.url == entity.url) {
-                it.copy(isBookmarked = bookmarked)
-            } else {
-                it
+        if (bookmarked) {
+            if (!checkVideoIsBookmarkedUseCase(entity.url)) {
+                insertBookmarkedVideoUseCase(listOf(entity))
             }
-        }
-
-        if (isFromBus) {
-            return
-        }
-
-        viewModelScope.launch {
-            _event.emit(SearchEvent.UpdateBookmark(videoDocumentStatus, bookmarked))
-
-            if (bookmarked) {
-                if (!checkVideoIsBookmarkedUseCase(entity.url)) {
-                    insertBookmarkedVideoUseCase(listOf(entity))
-                }
-            } else {
-                deleteBookmarkedVideoUseCase(entity)
-            }
+        } else {
+            deleteBookmarkedVideoUseCase(entity)
         }
     }
 

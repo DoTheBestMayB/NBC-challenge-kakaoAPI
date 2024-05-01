@@ -1,11 +1,8 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.presentation
+package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ActivityMainBinding
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.adapter.SearchCollectionAdapter
-import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.TabType
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
@@ -13,8 +10,8 @@ class MainActivity : AppCompatActivity() {
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
-    private val adapter: SearchCollectionAdapter by lazy {
-        SearchCollectionAdapter(this)
+    private val adapter: SearchViewPagerAdapter by lazy {
+        SearchViewPagerAdapter(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +31,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setTabLayout() = with(binding) {
         TabLayoutMediator(tabLayout, pager) { tab, position ->
-            val tabType = TabType.from(position)
-            tab.icon = AppCompatResources.getDrawable(baseContext, TabType.from(position).iconRes)
-            tab.text = getString(tabType.textName)
+            tab.setIcon(adapter.getIcon(position))
+            tab.setText(adapter.getTitle(position))
         }.attach()
     }
 }

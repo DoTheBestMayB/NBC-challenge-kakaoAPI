@@ -12,4 +12,4 @@ data class ImageDocumentResponse(
     @Json(name = "display_sitename") val displaySiteName: String,
     @Json(name = "doc_url") val docUrl: String,
     val datetime: Date,
-)
+) : SearchDocumentResponse

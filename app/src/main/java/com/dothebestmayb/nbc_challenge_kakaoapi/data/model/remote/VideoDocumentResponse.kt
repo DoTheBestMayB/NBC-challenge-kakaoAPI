@@ -10,4 +10,4 @@ data class VideoDocumentResponse(
     @Json(name = "play_time") val playTime: Int,
     val thumbnail: String,
     val author: String,
-)
+) : SearchDocumentResponse

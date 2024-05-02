@@ -1,7 +1,8 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.datasource
 
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.ImageSearchResponse
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.VideoSearchResponse
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.ImageDocumentResponse
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.SearchResponse
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.VideoDocumentResponse
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
 
 interface KakaoRemoteDataSource {
@@ -10,11 +11,11 @@ interface KakaoRemoteDataSource {
         query: String,
         page: Int,
         size: Int,
-    ): NetworkResult<ImageSearchResponse>
+    ): NetworkResult<SearchResponse<ImageDocumentResponse>>
 
     suspend fun getVideo(
         query: String,
         page: Int,
         size: Int
-    ): NetworkResult<VideoSearchResponse>
+    ): NetworkResult<SearchResponse<VideoDocumentResponse>>
 }

@@ -1,17 +1,17 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase
 
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoSearchEntity
+import androidx.paging.PagingData
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoDocumentEntity
+import kotlinx.coroutines.flow.Flow
 
 interface GetKakaoVideoUseCase {
 
-    suspend operator fun invoke(
+    operator fun invoke(
         query: String,
-        page: Int,
         size: Int = DEFAULT_SIZE,
-    ): NetworkResult<VideoSearchEntity>
+    ): Flow<PagingData<VideoDocumentEntity>>
 
     companion object {
-        private const val DEFAULT_SIZE = 10
+        private const val DEFAULT_SIZE = 30
     }
 }

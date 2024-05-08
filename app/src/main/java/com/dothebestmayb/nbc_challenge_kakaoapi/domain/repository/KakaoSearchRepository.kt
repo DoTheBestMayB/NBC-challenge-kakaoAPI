@@ -1,20 +1,19 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository
 
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageSearchEntity
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoSearchEntity
+import androidx.paging.PagingData
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.DocumentEntity
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoDocumentEntity
+import kotlinx.coroutines.flow.Flow
 
 interface KakaoSearchRepository {
 
-    suspend fun getImage(
+    fun getImage(
         query: String,
-        page: Int,
         size: Int,
-    ): NetworkResult<ImageSearchEntity>
+    ): Flow<PagingData<DocumentEntity>>
 
-    suspend fun getVideo(
+    fun getVideo(
         query: String,
-        page: Int,
         size: Int,
-    ): NetworkResult<VideoSearchEntity>
+    ): Flow<PagingData<VideoDocumentEntity>>
 }

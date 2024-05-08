@@ -4,9 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.onError
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.onException
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.onSuccess
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.DocumentEntity
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageDocumentEntity
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoDocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.CheckImageIsBookmarkedUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.CheckVideoIsBookmarkedUseCase
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase.DeleteBookmarkedImageUseCase
@@ -21,8 +24,11 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.debounce
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.toWithBookmarked
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -53,6 +59,38 @@ class SearchViewModel(
     private val _event = MutableSharedFlow<SearchEvent>()
     val event = _event.asSharedFlow()
 
+    fun search(query: String): Flow<PagingData<MediaInfo>> {
+        return getKakaoImageUseCase(query)
+            .map { pagingData ->
+                pagingData.map { entity ->
+                    when (entity) {
+                        is ImageDocumentEntity -> entity.toWithBookmarked(checkImageIsBookmarkedUseCase(entity.imageUrl))
+                        is VideoDocumentEntity -> entity.toWithBookmarked(checkVideoIsBookmarkedUseCase(entity.url))
+                    }
+//                    imageDocumentEntity.toWithBookmarked(
+//                        checkImageIsBookmarkedUseCase(
+//                            imageDocumentEntity.imageUrl
+//                        )
+//                    ) as MediaInfo
+                }
+            }
+            .cachedIn(viewModelScope)
+    }
+
+//    fun search(query: String): Flow<PagingData<MediaInfo>> {
+//        val imagesFlow = searchImageData(query)
+//        val videosFlow = searchVideoData(query)
+//
+//        return combine(imagesFlow, videosFlow) { images, videos ->
+//            images.map { image ->
+//                image
+//            }
+//            videos.map { video ->
+//                video
+//            }
+//        }
+//    }
+
     fun fetchDataFromServer(query: String) {
         if (query.isBlank()) {
             _results.value = Event(emptyList())
@@ -68,28 +106,28 @@ class SearchViewModel(
 
             val imageResponse = getKakaoImageUseCase(query, page)
 
-            imageResponse.onSuccess { imageSearchEntity ->
-                val result = imageSearchEntity.documents.map {
-                    it.toWithBookmarked(checkImageIsBookmarkedUseCase(it.imageUrl))
-                }
-                results.addAll(result)
-            }.onError { code, message ->
-                _error.value = "$code $message"
-            }.onException {
-                _error.value = "${it.message}"
-            }
-
-            videoResponse.await().onSuccess { videoSearchEntity ->
-                val result = videoSearchEntity.documents.map {
-                    it.toWithBookmarked(checkVideoIsBookmarkedUseCase(it.url))
-                }
-                results.addAll(result)
-            }.onError { code, message ->
-                _error.value = "$code $message"
-            }.onException {
-                _error.value = "${it.message}"
-            }
-            _results.value = Event(results.sortedByDescending { it.dateTime })
+//            imageResponse.onSuccess { imageSearchEntity ->
+//                val result = imageSearchEntity.documents.map {
+//                    it.toWithBookmarked(checkImageIsBookmarkedUseCase(it.imageUrl))
+//                }
+//                results.addAll(result)
+//            }.onError { code, message ->
+//                _error.value = "$code $message"
+//            }.onException {
+//                _error.value = "${it.message}"
+//            }
+//
+//            videoResponse.await().onSuccess { videoSearchEntity ->
+//                val result = videoSearchEntity.documents.map {
+//                    it.toWithBookmarked(checkVideoIsBookmarkedUseCase(it.url))
+//                }
+//                results.addAll(result)
+//            }.onError { code, message ->
+//                _error.value = "$code $message"
+//            }.onException {
+//                _error.value = "${it.message}"
+//            }
+//            _results.value = Event(results.sortedByDescending { it.dateTime })
         }
     }
 

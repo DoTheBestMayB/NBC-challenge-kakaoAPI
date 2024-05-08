@@ -4,6 +4,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.data.database.ImageDocumentDao
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.database.VideoDocumentDao
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.toData
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.toEntity
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.DocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageDocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoDocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.BookmarkRepository

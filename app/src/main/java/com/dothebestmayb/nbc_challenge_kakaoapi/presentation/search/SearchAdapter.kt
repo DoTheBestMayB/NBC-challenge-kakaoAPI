@@ -3,6 +3,7 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -17,7 +18,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 
 class SearchAdapter(
     private val onBookmarkChanged: (mediaInfo: MediaInfo, isBookmarked: Boolean) -> Unit,
-) : ListAdapter<MediaInfo, ViewHolder>(diff) {
+) : PagingDataAdapter<MediaInfo, ViewHolder>(diff) {
 
     enum class PayLoad {
         ONLY_BOOKMARK
@@ -131,9 +132,10 @@ class SearchAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = getItem(position) ?: return
         when (holder) {
-            is ImageViewHolder -> holder.bind(getItem(position) as MediaInfo.ImageDocumentStatus)
-            is VideoViewHolder -> holder.bind(getItem(position) as MediaInfo.VideoDocumentStatus)
+            is ImageViewHolder -> holder.bind(item as MediaInfo.ImageDocumentStatus)
+            is VideoViewHolder -> holder.bind(item as MediaInfo.VideoDocumentStatus)
         }
     }
 
@@ -142,7 +144,8 @@ class SearchAdapter(
         position: Int,
         payloads: MutableList<Any>
     ) {
-        if (payloads.isEmpty()) {
+        val item = getItem(position)
+        if (payloads.isEmpty() || item == null) {
             super.onBindViewHolder(holder, position, payloads)
             return
         }
@@ -150,8 +153,8 @@ class SearchAdapter(
             when (payload) {
                 PayLoad.ONLY_BOOKMARK -> {
                     when (holder) {
-                        is ImageViewHolder -> holder.changeBookmarkInfo(getItem(position) as MediaInfo.ImageDocumentStatus)
-                        is VideoViewHolder -> holder.changeBookmarkInfo(getItem(position) as MediaInfo.VideoDocumentStatus)
+                        is ImageViewHolder -> holder.changeBookmarkInfo(item as MediaInfo.ImageDocumentStatus)
+                        is VideoViewHolder -> holder.changeBookmarkInfo(item as MediaInfo.VideoDocumentStatus)
                     }
                 }
 
@@ -167,6 +170,7 @@ class SearchAdapter(
         return when (getItem(position)) {
             is MediaInfo.ImageDocumentStatus -> AdapterType.IMAGE.viewTypeValue
             is MediaInfo.VideoDocumentStatus -> AdapterType.VIDEO.viewTypeValue
+            else -> AdapterType.Unknown.viewTypeValue
         }
     }
 

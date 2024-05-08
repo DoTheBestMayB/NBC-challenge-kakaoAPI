@@ -6,6 +6,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.ImageDocumentR
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.MetaResponse
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.SearchResponse
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.VideoDocumentResponse
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.DocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageDocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageSearchEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.MetaEntity

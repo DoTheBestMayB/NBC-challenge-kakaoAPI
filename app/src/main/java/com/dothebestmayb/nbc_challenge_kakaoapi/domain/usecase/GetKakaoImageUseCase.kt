@@ -1,18 +1,18 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase
 
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageSearchEntity
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
+import androidx.paging.PagingData
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.DocumentEntity
+import kotlinx.coroutines.flow.Flow
 
 interface GetKakaoImageUseCase {
 
-    suspend operator fun invoke(
+    operator fun invoke(
         query: String,
-        page: Int,
         size: Int = DEFAULT_SIZE,
-    ): NetworkResult<ImageSearchEntity>
+    ): Flow<PagingData<DocumentEntity>>
 
 
     companion object {
-        private const val DEFAULT_SIZE = 10
+        private const val DEFAULT_SIZE = 30
     }
 }

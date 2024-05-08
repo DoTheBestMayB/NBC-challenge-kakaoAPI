@@ -1,33 +1,40 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.repository
 
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.datasource.KakaoRemoteDataSource
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.map
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.ImageDocumentResponse
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.VideoDocumentResponse
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.toEntity
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageSearchEntity
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoSearchEntity
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.DocumentEntity
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoDocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class KakaoSearchRepositoryImpl(
     private val kakaoRemoteDataSource: KakaoRemoteDataSource,
 ) : KakaoSearchRepository {
-    override suspend fun getImage(
+    override fun getImage(
         query: String,
-        page: Int,
         size: Int
-    ): NetworkResult<ImageSearchEntity> {
-        return kakaoRemoteDataSource.getImage(query, page, size).map {
-            it.toEntity()
+    ): Flow<PagingData<DocumentEntity>> {
+        return kakaoRemoteDataSource.getImage(query, size).map {
+            it.map {
+                when(it) {
+                    is ImageDocumentResponse -> it.toEntity()
+                    is VideoDocumentResponse -> it.toEntity()
+                }
+            }
         }
     }
 
-    override suspend fun getVideo(
+    override fun getVideo(
         query: String,
-        page: Int,
         size: Int
-    ): NetworkResult<VideoSearchEntity> {
-        return kakaoRemoteDataSource.getVideo(query, page, size).map {
-            it.toEntity()
+    ): Flow<PagingData<VideoDocumentEntity>> {
+        return kakaoRemoteDataSource.getVideo(query, size).map {
+            it.map { it.toEntity() }
         }
     }
 }

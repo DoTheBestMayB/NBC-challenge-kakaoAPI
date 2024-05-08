@@ -1,17 +1,17 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase
 
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageSearchEntity
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
+import androidx.paging.PagingData
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.DocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
+import kotlinx.coroutines.flow.Flow
 
 class GetKakaoImageUseCaseImpl(
     private val kakaoSearchRepository: KakaoSearchRepository,
 ) : GetKakaoImageUseCase {
-    override suspend fun invoke(
+    override fun invoke(
         query: String,
-        page: Int,
         size: Int
-    ): NetworkResult<ImageSearchEntity> {
-        return kakaoSearchRepository.getImage(query, page, size)
+    ): Flow<PagingData<DocumentEntity>> {
+        return kakaoSearchRepository.getImage(query, size)
     }
 }

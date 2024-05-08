@@ -1,21 +1,19 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.datasource
 
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.ImageDocumentResponse
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.SearchResponse
+import androidx.paging.PagingData
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.SearchDocumentResponse
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.VideoDocumentResponse
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
+import kotlinx.coroutines.flow.Flow
 
 interface KakaoRemoteDataSource {
 
-    suspend fun getImage(
+    fun getImage(
         query: String,
-        page: Int,
         size: Int,
-    ): NetworkResult<SearchResponse<ImageDocumentResponse>>
+    ): Flow<PagingData<SearchDocumentResponse>>
 
-    suspend fun getVideo(
+    fun getVideo(
         query: String,
-        page: Int,
         size: Int
-    ): NetworkResult<SearchResponse<VideoDocumentResponse>>
+    ): Flow<PagingData<VideoDocumentResponse>>
 }

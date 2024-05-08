@@ -1,17 +1,17 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.domain.usecase
 
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoSearchEntity
+import androidx.paging.PagingData
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.VideoDocumentEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
+import kotlinx.coroutines.flow.Flow
 
 class GetKakaoVideoUseCaseImpl(
     private val kakaoSearchRepository: KakaoSearchRepository,
 ) : GetKakaoVideoUseCase {
-    override suspend fun invoke(
+    override fun invoke(
         query: String,
-        page: Int,
         size: Int
-    ): NetworkResult<VideoSearchEntity> {
-        return kakaoSearchRepository.getVideo(query, page, size)
+    ): Flow<PagingData<VideoDocumentEntity>> {
+        return kakaoSearchRepository.getVideo(query, size)
     }
 }

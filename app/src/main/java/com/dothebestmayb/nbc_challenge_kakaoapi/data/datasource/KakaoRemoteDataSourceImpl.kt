@@ -1,27 +1,38 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.datasource
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.ImageDocumentResponse
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.SearchResponse
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.SearchDocumentResponse
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.remote.VideoDocumentResponse
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.network.KakaoService
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.NetworkResult
+import kotlinx.coroutines.flow.Flow
 
 class KakaoRemoteDataSourceImpl(
     private val kakaoService: KakaoService
 ) : KakaoRemoteDataSource {
-    override suspend fun getImage(
+    override fun getImage(
         query: String,
-        page: Int,
         size: Int
-    ): NetworkResult<SearchResponse<ImageDocumentResponse>> {
-        return kakaoService.getImage(query, page, size)
+    ): Flow<PagingData<SearchDocumentResponse>> {
+        return Pager(
+            config = PagingConfig(enablePlaceholders = false, pageSize = NETWORK_PAGE_SIZE),
+            pagingSourceFactory = { KakaoPagingSource(kakaoService, query, size) }
+        ).flow
     }
 
-    override suspend fun getVideo(
+    override fun getVideo(
         query: String,
-        page: Int,
         size: Int
-    ): NetworkResult<SearchResponse<VideoDocumentResponse>> {
-        return kakaoService.getVideo(query, page, size)
+    ): Flow<PagingData<VideoDocumentResponse>> {
+        return Pager(
+            config = PagingConfig(enablePlaceholders = false, pageSize = NETWORK_PAGE_SIZE),
+            pagingSourceFactory = { KakaoVideoPagingSource(kakaoService, query, size) }
+        ).flow
+    }
+
+    companion object {
+        private const val NETWORK_PAGE_SIZE = 50
     }
 }

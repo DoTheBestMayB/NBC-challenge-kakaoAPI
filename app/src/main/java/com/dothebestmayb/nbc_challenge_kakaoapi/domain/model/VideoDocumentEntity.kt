@@ -5,8 +5,8 @@ import java.util.Date
 data class VideoDocumentEntity(
     val title: String,
     val url: String,
-    val dateTime: Date,
+    override val dateTime: Date,
     val playTime: Int,
     val thumbnail: String,
     val author: String,
-)
+) : DocumentEntity

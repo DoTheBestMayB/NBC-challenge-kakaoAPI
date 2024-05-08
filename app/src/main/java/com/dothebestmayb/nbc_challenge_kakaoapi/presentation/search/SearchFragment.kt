@@ -17,6 +17,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.SearchContainer
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.shared.SearchSharedEvent
 import com.dothebestmayb.nbc_challenge_kakaoapi.shared.SearchSharedViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -76,22 +77,35 @@ class SearchFragment : Fragment() {
         }
     }
 
+    private var searchJob: Job? = null
+
     private fun setObserve() {
         searchViewModel.query.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { query ->
-                searchViewModel.fetchDataFromServer(query)
+//                searchViewModel.fetchDataFromServer(query)
+                searchJob?.cancel()
+                searchJob = lifecycleScope.launch {
+                    searchViewModel.search(query).collectLatest {
+                        adapter.submitData(it)
+                    }
+                }
             }
         }
-        searchViewModel.results.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { mediaInfo ->
-                adapter.submitList(mediaInfo)
-            }
-        }
+//        searchViewModel.results.observe(viewLifecycleOwner) {
+//            it.getContentIfNotHandled()?.let { mediaInfo ->
+//                adapter.submitList(mediaInfo)
+//            }
+//        }
         searchViewModel.error.observe(viewLifecycleOwner) {
             Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
         }
         viewLifecycleOwner.lifecycleScope.launch {
             launch {
+                // flowWithLifecycle은 최근에 나온 것으로 repeatOnLifecycle + Lifecycle이 끊기면 close 해준다.
+                // callback을 flow 형태로 받게끔 해주는 것이 callbackFlow(onReceive 등과 같은 비동기)
+                // collect vs collectLatest 차이가 발생하는 상황이 언제인지 찾아보기
+                // Event 처리는 sharedFlow를 사용
+                // 아래 코드는 collect + collectLatest 조합인데, 각 조합에 따른 차이 찾아보기
                 searchViewModel.event.flowWithLifecycle(lifecycle)
                     .collectLatest { event ->
                         onEvent(event)

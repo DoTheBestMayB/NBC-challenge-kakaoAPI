@@ -34,7 +34,9 @@ class SearchAdapter(
                 .placeholder(R.drawable.transparent_background)
                 .into(ivThumbnail)
             tvUploadTime.text = DateUtil.simpleFormatDate(item.dateTime)
-            tvSiteName.text = item.displaySiteName
+
+            val displaySiteName = "$IMAGE_HEADER_TEXT ${item.displaySiteName}"
+            tvSiteName.text = displaySiteName
             changeBookmarkInfo(item)
         }
 
@@ -48,6 +50,10 @@ class SearchAdapter(
             ivBookmark.setOnClickListener {
                 onBookmark(item, item.isBookmarked.not())
             }
+        }
+
+        companion object {
+            private const val IMAGE_HEADER_TEXT = "[Image]"
         }
     }
 
@@ -63,7 +69,8 @@ class SearchAdapter(
                 .into(ivThumbNail)
 
             setPlayTime(item.playTime, tvPlayTime)
-            tvTitle.text = item.title
+            val displayTitleName = "$VIDEO_HEADER_TEXT ${item.title}"
+            tvTitle.text = displayTitleName
             tvSiteName.text = item.author
             tvUploadTime.text = DateUtil.simpleFormatDate(item.dateTime)
             changeBookmarkInfo(item)
@@ -93,6 +100,10 @@ class SearchAdapter(
             }
 
             view.text = formattedTime
+        }
+
+        companion object {
+            private const val VIDEO_HEADER_TEXT = "[Video]"
         }
     }
 

@@ -10,9 +10,9 @@
         android:id="@+id/et_query"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:maxLength="20"
         android:maxLines="1"
-        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -25,8 +25,18 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_bookmarked"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_query" />
+        app:layout_constraintTop_toBottomOf="@id/et_query"
+        tools:listitem="@layout/item_bookmarked" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/baseline_arrow_upward_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

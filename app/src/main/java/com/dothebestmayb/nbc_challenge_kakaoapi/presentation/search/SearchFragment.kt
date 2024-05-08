@@ -1,6 +1,7 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search
 
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +13,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.SearchContainer
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.model.MediaInfo
+import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.util.smoothSnapToPosition
 import com.dothebestmayb.nbc_challenge_kakaoapi.shared.SearchSharedEvent
 import com.dothebestmayb.nbc_challenge_kakaoapi.shared.SearchSharedViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -76,7 +79,11 @@ class SearchFragment : Fragment() {
         etQuery.doOnTextChanged { text, _, _, _ ->
             searchViewModel.updateQuery(text.toString())
         }
-        rv.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        fab.setOnClickListener {
+            rv.smoothSnapToPosition(0)
+        }
+
+        rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             private val layoutManager = rv.layoutManager as LinearLayoutManager
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -84,8 +91,11 @@ class SearchFragment : Fragment() {
 
                 val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
                 if (lastVisiblePosition == RecyclerView.NO_POSITION) {
+                    fab.visibility = View.GONE
                     return
                 }
+                fab.visibility = if (lastVisiblePosition > 3) View.VISIBLE else View.GONE
+
                 if (lastVisiblePosition >= adapter.itemCount - 10) {
                     searchViewModel.searchNext()
                 }

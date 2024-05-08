@@ -13,13 +13,15 @@ interface KakaoService {
     suspend fun getImage(
         @Query("query") query: String,
         @Query("page") page: Int,
-        @Query("size") size: Int
+        @Query("size") size: Int,
+        @Query("sort") sort: String = "recency",
     ): NetworkResult<SearchResponse<ImageDocumentResponse>>
 
     @GET("v2/search/vclip")
     suspend fun getVideo(
         @Query("query") query: String,
         @Query("page") page: Int,
-        @Query("size") size: Int
+        @Query("size") size: Int,
+        @Query("sort") sort: String = "recency",
     ): NetworkResult<SearchResponse<VideoDocumentResponse>>
 }

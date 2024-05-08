@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 fun RecyclerView.smoothSnapToPosition(position: Int) {
     val scrollDuration = 500f
-    val smoothScroller = object: LinearSmoothScroller(this.context) {
+    val smoothScroller = object : LinearSmoothScroller(this.context) {
         override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
             return scrollDuration / computeVerticalScrollRange()
         }

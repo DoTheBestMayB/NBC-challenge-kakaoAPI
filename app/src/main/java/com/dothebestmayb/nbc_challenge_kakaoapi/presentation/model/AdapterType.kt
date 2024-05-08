@@ -4,6 +4,7 @@ enum class AdapterType(val viewTypeValue: Int) {
     IMAGE(0), VIDEO(1), Unknown(-1);
 
     companion object {
-        fun from(viewTypeValue: Int) = entries.firstOrNull { it.viewTypeValue == viewTypeValue } ?: Unknown
+        fun from(viewTypeValue: Int) =
+            entries.firstOrNull { it.viewTypeValue == viewTypeValue } ?: Unknown
     }
 }

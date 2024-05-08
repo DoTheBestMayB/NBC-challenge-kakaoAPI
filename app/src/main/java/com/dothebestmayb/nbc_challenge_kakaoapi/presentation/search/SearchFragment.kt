@@ -1,7 +1,6 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.presentation.search
 
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App

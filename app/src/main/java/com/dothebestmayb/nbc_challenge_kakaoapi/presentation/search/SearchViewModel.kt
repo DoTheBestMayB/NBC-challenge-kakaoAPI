@@ -70,7 +70,8 @@ class SearchViewModel(
                 getKakaoVideoUseCase(query, page)
             }
 
-            val results = _results.value?.peekContent()?.toMutableList() ?: mutableListOf<MediaInfo>()
+            val results =
+                _results.value?.peekContent()?.toMutableList() ?: mutableListOf<MediaInfo>()
 
             val imageResponse = getKakaoImageUseCase(query, page)
 

@@ -11,6 +11,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.App
 import com.dothebestmayb.nbc_challenge_kakaoapi.presentation.di.SearchContainer
@@ -74,6 +76,21 @@ class SearchFragment : Fragment() {
         etQuery.doOnTextChanged { text, _, _, _ ->
             searchViewModel.updateQuery(text.toString())
         }
+        rv.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            private val layoutManager = rv.layoutManager as LinearLayoutManager
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val lastVisiblePosition = layoutManager.findLastVisibleItemPosition()
+                if (lastVisiblePosition == RecyclerView.NO_POSITION) {
+                    return
+                }
+                if (lastVisiblePosition >= adapter.itemCount - 10) {
+                    searchViewModel.searchNext()
+                }
+            }
+        })
     }
 
     private fun setObserve() {

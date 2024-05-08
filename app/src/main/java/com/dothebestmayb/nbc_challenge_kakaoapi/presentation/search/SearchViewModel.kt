@@ -53,18 +53,24 @@ class SearchViewModel(
     private val _event = MutableSharedFlow<SearchEvent>()
     val event = _event.asSharedFlow()
 
+    private var isLoading = false
+
     fun fetchDataFromServer(query: String) {
         if (query.isBlank()) {
             _results.value = Event(emptyList())
             return
         }
+        if (isLoading) {
+            return
+        }
+        isLoading = true
 
         viewModelScope.launch {
             val videoResponse = async {
                 getKakaoVideoUseCase(query, page)
             }
 
-            val results = mutableListOf<MediaInfo>()
+            val results = _results.value?.peekContent()?.toMutableList() ?: mutableListOf<MediaInfo>()
 
             val imageResponse = getKakaoImageUseCase(query, page)
 
@@ -90,6 +96,7 @@ class SearchViewModel(
                 _error.value = "${it.message}"
             }
             _results.value = Event(results.sortedByDescending { it.dateTime })
+            isLoading = false
         }
     }
 
@@ -156,6 +163,15 @@ class SearchViewModel(
         } else {
             deleteBookmarkedVideoUseCase(entity)
         }
+    }
+
+    fun searchNext() {
+        if (isLoading) {
+            return
+        }
+        page++
+        val query = _query.value?.peekContent() ?: return
+        fetchDataFromServer(query)
     }
 
     companion object {

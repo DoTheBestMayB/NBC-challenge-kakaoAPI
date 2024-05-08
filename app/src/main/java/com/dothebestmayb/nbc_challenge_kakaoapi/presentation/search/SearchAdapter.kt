@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
@@ -44,7 +43,6 @@ class SearchAdapter(
                 ivBookmark.setImageResource(R.drawable.baseline_bookmark_added_24)
             } else {
                 ivBookmark.setImageResource(R.drawable.bookmark_add_24)
-
             }
             ivBookmark.setOnClickListener {
                 onBookmark(item, item.isBookmarked.not())

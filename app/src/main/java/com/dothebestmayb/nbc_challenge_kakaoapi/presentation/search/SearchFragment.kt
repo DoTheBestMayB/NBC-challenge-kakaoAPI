@@ -45,6 +45,8 @@ class SearchFragment : Fragment() {
 
     private val searchSharedViewModel: SearchSharedViewModel by activityViewModels()
 
+    private var searchJob: Job? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -76,8 +78,6 @@ class SearchFragment : Fragment() {
             searchViewModel.updateQuery(text.toString())
         }
     }
-
-    private var searchJob: Job? = null
 
     private fun setObserve() {
         searchViewModel.query.observe(viewLifecycleOwner) {

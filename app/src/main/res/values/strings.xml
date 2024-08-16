@@ -2,4 +2,5 @@
     <string name="app_name">NBC-challenge-kakaoAPI</string>
     <string name="search">검색</string>
     <string name="bookmark">북마크</string>
+    <string name="hint_for_text_field">검색어</string>
 </resources>

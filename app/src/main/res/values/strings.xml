@@ -2,6 +2,4 @@
     <string name="app_name">NBC-challenge-kakaoAPI</string>
     <string name="search">검색</string>
     <string name="bookmark">북마크</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

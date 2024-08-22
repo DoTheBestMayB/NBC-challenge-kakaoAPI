@@ -9,6 +9,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 
 
@@ -17,6 +18,12 @@ class SearchFragment : Fragment() {
     private var _binding: FragmentSearchBinding? = null
     private val binding: FragmentSearchBinding
         get() = _binding!!
+
+    private val viewModel: SearchViewModel by viewModels()
+
+    private val searchAdapter = SearchAdapter { item ->
+        viewModel.onBookmarkClick(item)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,7 +36,12 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setRecyclerView()
         setListener()
+    }
+
+    private fun setRecyclerView() {
+        binding.rvSearchResult.adapter = searchAdapter
     }
 
     private fun setListener() {

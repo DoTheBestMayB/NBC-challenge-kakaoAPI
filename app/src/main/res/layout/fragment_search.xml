@@ -25,11 +25,24 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/text_field_input"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:imeOptions="actionSearch"
             android:inputType="text"
-            android:nextFocusForward="@id/v_dummy_for_remove_focus"
-            android:layout_height="wrap_content" />
+            android:nextFocusForward="@id/v_dummy_for_remove_focus" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search_result"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        tools:listitem="@layout/item_image_search_result"
+        android:layout_marginHorizontal="@dimen/side_margin24"
+        android:layout_marginTop="@dimen/top_margin12"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_field" />
 
     <View
         android:id="@+id/v_dummy_for_remove_focus"

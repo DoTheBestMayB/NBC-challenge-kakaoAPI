@@ -15,7 +15,9 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal class NetworkModule {
+internal object NetworkModule {
+
+    private const val KAKAO_BASE_URL = "https://dapi.kakao.com/v2/"
 
     @Provides
     @Singleton
@@ -58,9 +60,5 @@ internal class NetworkModule {
             .baseUrl(KAKAO_BASE_URL)
             .addConverterFactory(moshiConverterFactory)
             .build()
-    }
-
-    companion object {
-        private const val KAKAO_BASE_URL = "https://dapi.kakao.com/v2/"
     }
 }

@@ -1,4 +1,4 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.di
+package com.dothebestmayb.nbc_challenge_kakaoapi.data.di
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.config.Logging
 import com.squareup.moshi.Moshi

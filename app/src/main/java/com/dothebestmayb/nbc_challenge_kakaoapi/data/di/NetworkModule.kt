@@ -1,6 +1,7 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.di
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.config.Logging
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.adapter.DocumentAdapter
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -20,6 +21,7 @@ internal class NetworkModule {
     @Singleton
     fun provideMoshi(): Moshi {
         return Moshi.Builder()
+            .add(DocumentAdapter)
             .build()
     }
 

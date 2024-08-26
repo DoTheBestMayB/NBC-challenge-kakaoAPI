@@ -1,6 +1,6 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.data.adapter
+package com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.adapter
 
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.model.response.Document
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.model.response.Document
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter

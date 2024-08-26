@@ -1,4 +1,4 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.data.model
+package com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.model
 
 import androidx.annotation.IntRange
 import com.squareup.moshi.JsonClass

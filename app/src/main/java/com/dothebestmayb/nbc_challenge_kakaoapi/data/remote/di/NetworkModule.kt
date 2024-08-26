@@ -1,7 +1,7 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.data.di
+package com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.di
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.config.Logging
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.adapter.DocumentAdapter
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.adapter.DocumentAdapter
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides

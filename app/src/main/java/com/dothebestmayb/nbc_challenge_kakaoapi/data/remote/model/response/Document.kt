@@ -1,4 +1,4 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.data.model.response
+package com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.model.response
 
 import java.time.LocalDateTime
 

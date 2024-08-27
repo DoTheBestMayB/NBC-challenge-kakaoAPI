@@ -2,6 +2,7 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.di
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.config.Logging
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.adapter.DocumentAdapter
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.service.KakaoService
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -60,5 +61,13 @@ internal object NetworkModule {
             .baseUrl(KAKAO_BASE_URL)
             .addConverterFactory(moshiConverterFactory)
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideKakaoApiService(
+        retrofit: Retrofit
+    ): KakaoService {
+        return retrofit.create(KakaoService::class.java)
     }
 }

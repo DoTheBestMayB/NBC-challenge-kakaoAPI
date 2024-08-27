@@ -8,7 +8,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRep
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class KakaoSearchRepositoryImpl @Inject constructor(
+internal class KakaoSearchRepositoryImpl @Inject constructor(
     private val kakaoRemoteDataSource: KakaoRemoteDataSource,
 ): KakaoSearchRepository {
 

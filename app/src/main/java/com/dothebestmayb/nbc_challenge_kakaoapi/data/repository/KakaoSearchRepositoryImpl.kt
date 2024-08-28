@@ -24,7 +24,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchImage(query: String, sort: SortType, page: Int, size: Int) {
+    override suspend fun fetchImage(query: String, page: Int, size: Int, sort: SortType) {
         try {
             val response = kakaoRemoteDataSource.getImage(GetImageRequest(query, sort, page, size))
             kakaoLocalDataSource.insertImage(response.documents.map {

@@ -11,8 +11,8 @@ interface KakaoSearchRepository {
 
     suspend fun fetchImage(
         query: String,
-        sort: SortType = SortType.ACCURACY,
         @IntRange(1, 50) page: Int,
         @IntRange(1, 80) size: Int,
+        sort: SortType = SortType.ACCURACY,
     )
 }

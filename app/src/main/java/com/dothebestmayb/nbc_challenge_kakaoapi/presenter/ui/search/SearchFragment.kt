@@ -7,11 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -40,6 +46,7 @@ class SearchFragment : Fragment() {
 
         setRecyclerView()
         setListener()
+        setObserve()
     }
 
     private fun setRecyclerView() {
@@ -51,6 +58,8 @@ class SearchFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
                 hideInput()
                 binding.vDummyForRemoveFocus.requestFocus()
+
+                viewModel.onSearch(binding.textField.editText?.text.toString())
                 return@setOnEditorActionListener true
             }
             return@setOnEditorActionListener false
@@ -59,6 +68,8 @@ class SearchFragment : Fragment() {
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                 hideInput()
                 binding.vDummyForRemoveFocus.requestFocus()
+
+                viewModel.onSearch(binding.textField.editText?.text.toString())
                 return@setOnKeyListener true
             }
             return@setOnKeyListener false
@@ -76,6 +87,26 @@ class SearchFragment : Fragment() {
                 binding.root.windowToken,
                 0
             )
+    }
+
+    private fun setObserve() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    if (state.isLoading) {
+                        return@collect
+                    }
+                    when (state.error) {
+                        SearchErrorType.NONE -> Unit
+                        SearchErrorType.INTERNET_IS_NOT_CONNECTED -> {
+                            // TODO : 인터넷 연결 상태를 나타내는 하단바로 변경
+                            Toast.makeText(requireContext(), getString(R.string.internet_is_not_connected), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    searchAdapter.submitList(state.searchResult)
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {

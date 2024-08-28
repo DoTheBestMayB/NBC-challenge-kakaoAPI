@@ -26,7 +26,7 @@ class SearchAdapter(
             }
 
             binding.ivThumbnail.load(item.thumbnail)
-            binding.tvDate.text = item.datetime
+            binding.tvDate.text = item.datetime.toString()
 
             setBookmark(item)
         }
@@ -55,7 +55,7 @@ class SearchAdapter(
             }
 
             binding.ivThumbnail.load(item.thumbnail)
-            binding.tvDate.text = item.datetime
+            binding.tvDate.text = item.datetime.toString()
 
             setBookmark(item)
         }

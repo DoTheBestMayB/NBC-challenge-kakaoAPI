@@ -3,6 +3,7 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageSearchInfo
 import java.time.LocalDateTime
 
 @Entity
@@ -13,4 +14,12 @@ data class ImageSearchEntity(
     @ColumnInfo(name = "display_site_name") val displaySiteName: String,
     @ColumnInfo(name = "doc_url") val docUrl: String,
     @ColumnInfo(name = "datetime") val datetime: LocalDateTime,
-)
+) {
+    fun toDomain(): ImageSearchInfo = ImageSearchInfo(
+        thumbnailUrl = thumbnailUrl,
+        imageUrl = imageUrl,
+        displaySiteName = displaySiteName,
+        docUrl = docUrl,
+        datetime = datetime,
+    )
+}

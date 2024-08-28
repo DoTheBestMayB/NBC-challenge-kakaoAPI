@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface KakaoSearchRepository {
 
-    val data: Flow<List<ImageSearchInfo>>
+    suspend fun getItems(query: String): Flow<List<ImageSearchInfo>>
 
     suspend fun fetchImage(
         query: String,

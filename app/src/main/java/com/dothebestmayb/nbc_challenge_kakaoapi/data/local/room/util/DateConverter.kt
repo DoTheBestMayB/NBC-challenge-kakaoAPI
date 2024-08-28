@@ -1,17 +1,16 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.util
 
 import androidx.room.TypeConverter
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.adapter.DocumentAdapter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class DateConverter {
 
-    private val dateFormat = DateTimeFormatter.ofPattern(DocumentAdapter.DATETIME_FORMAT)
+    private val dateFormat = DateTimeFormatter.ofPattern(DATETIME_FORMAT)
 
     @TypeConverter
     fun fromStatement(statement: String): LocalDateTime {
-        return LocalDateTime.parse(statement)
+        return LocalDateTime.parse(statement, dateFormat)
     }
 
     @TypeConverter

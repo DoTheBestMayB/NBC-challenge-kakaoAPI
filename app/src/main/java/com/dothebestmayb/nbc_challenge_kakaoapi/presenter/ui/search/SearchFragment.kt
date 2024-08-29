@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -142,7 +141,12 @@ class SearchFragment : Fragment() {
 
     private fun hideNetworkStatusBar() {
         binding.tvNetworkStatus.text = getString(R.string.internet_is_connected)
-        binding.tvNetworkStatus.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green))
+        binding.tvNetworkStatus.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.green
+            )
+        )
 
         networkStatusHandleJob?.cancel()
 
@@ -154,7 +158,12 @@ class SearchFragment : Fragment() {
 
     private fun showNetworkStatusBar() {
         binding.tvNetworkStatus.text = getString(R.string.internet_is_not_connected)
-        binding.tvNetworkStatus.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray))
+        binding.tvNetworkStatus.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.gray
+            )
+        )
 
         networkStatusHandleJob?.cancel()
         networkStatusHandleJob = null

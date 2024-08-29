@@ -16,6 +16,19 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@tools:sample/avatars" />
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/cpi_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:indicatorColor="@color/kakao_color"
+        app:layout_constraintBottom_toBottomOf="@id/iv_thumbnail"
+        app:layout_constraintEnd_toEndOf="@id/iv_thumbnail"
+        app:layout_constraintStart_toStartOf="@id/iv_thumbnail"
+        app:layout_constraintTop_toTopOf="@id/iv_thumbnail"
+        app:showDelay="@integer/loading_delay" />
+
     <TextView
         android:id="@+id/tv_date"
         android:layout_width="wrap_content"

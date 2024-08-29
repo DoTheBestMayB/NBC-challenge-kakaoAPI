@@ -28,7 +28,13 @@ class SearchAdapter(
                 bookmarkOnClickListener.onClick(item)
             }
 
-            binding.ivThumbnail.load(item.thumbnail)
+            binding.cpiLoading.show()
+            binding.ivThumbnail.load(item.thumbnail) {
+                target {
+                    binding.cpiLoading.hide()
+                    binding.ivThumbnail.setImageDrawable(it)
+                }
+            }
             binding.tvDate.text = item.datetime.format(dateFormat)
 
             setBookmark(item)

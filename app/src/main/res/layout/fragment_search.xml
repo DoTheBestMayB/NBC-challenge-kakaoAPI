@@ -31,6 +31,19 @@
             android:nextFocusForward="@id/v_dummy_for_remove_focus" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/cpi_loading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/top_margin12"
+        android:indeterminate="true"
+        android:visibility="invisible"
+        app:indicatorColor="@color/kakao_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_field"
+        app:showDelay="@integer/loading_delay" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_search_result"
         android:layout_width="0dp"
@@ -41,7 +54,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_field"
+        app:layout_constraintTop_toBottomOf="@id/cpi_loading"
         tools:listitem="@layout/item_image_search_result" />
 
     <View

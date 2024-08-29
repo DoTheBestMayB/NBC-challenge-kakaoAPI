@@ -127,8 +127,11 @@ class SearchFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     if (state.isLoading) {
+                        binding.cpiLoading.show()
                         return@collect
                     }
+                    binding.cpiLoading.hide()
+
                     when (state.networkStatus) {
                         NetworkStatus.AVAILABLE -> hideNetworkStatusBar()
                         NetworkStatus.LOST -> showNetworkStatusBar()

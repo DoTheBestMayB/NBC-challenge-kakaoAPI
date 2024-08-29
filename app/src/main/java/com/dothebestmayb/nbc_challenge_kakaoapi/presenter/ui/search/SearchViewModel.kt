@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,7 +45,7 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             kakaoSearchRepository.fetchImage(keyword, page, size)
 
-            kakaoSearchRepository.getItems(currentSearchKeyword).collectLatest { items ->
+            kakaoSearchRepository.getItems(currentSearchKeyword).distinctUntilChanged().collectLatest { items ->
                 _uiState.emit(
                     _uiState.value.copy(
                         isLoading = false,

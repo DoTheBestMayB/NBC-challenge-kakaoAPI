@@ -1,5 +1,6 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -14,6 +15,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +34,31 @@ class SearchFragment : Fragment() {
 
     private val searchAdapter = SearchAdapter { item ->
         viewModel.onBookmarkClick(item)
+    }
+
+    private val itemDecoration = object : ItemDecoration() {
+
+        private val marginSize by lazy {
+            binding.root.context.resources.getDimension(R.dimen.view_holder12).toInt()
+        }
+
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
+            super.getItemOffsets(outRect, view, parent, state)
+
+            val position = parent.getChildAdapterPosition(view)
+
+            // 마지막 Item은 margin을 설정하지 않음
+            // Item을 recyclerView에서 삭제할 수 있다면 position이 -1일 때도 지워지기 전과 동일하도록 처리해야 함
+            // 관련 내용 : https://dodobest.tistory.com/115
+            if (position != searchAdapter.itemCount - 1) {
+                outRect.set(0, 0, 0, marginSize)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -51,6 +79,7 @@ class SearchFragment : Fragment() {
 
     private fun setRecyclerView() {
         binding.rvSearchResult.adapter = searchAdapter
+        binding.rvSearchResult.addItemDecoration(itemDecoration)
     }
 
     private fun setListener() {
@@ -100,7 +129,11 @@ class SearchFragment : Fragment() {
                         SearchErrorType.NONE -> Unit
                         SearchErrorType.INTERNET_IS_NOT_CONNECTED -> {
                             // TODO : 인터넷 연결 상태를 나타내는 하단바로 변경
-                            Toast.makeText(requireContext(), getString(R.string.internet_is_not_connected), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                getString(R.string.internet_is_not_connected),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                     searchAdapter.submitList(state.searchResult)
@@ -110,6 +143,7 @@ class SearchFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        binding.rvSearchResult.adapter = null
         _binding = null
 
         super.onDestroyView()

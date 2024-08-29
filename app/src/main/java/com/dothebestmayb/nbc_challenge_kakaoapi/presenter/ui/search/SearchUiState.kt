@@ -1,7 +1,9 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search
 
+import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.network.NetworkStatus
+
 data class SearchUiState(
     val isLoading: Boolean = false,
     val searchResult: List<SearchItem> = emptyList(),
-    val error: SearchErrorType = SearchErrorType.NONE,
+    val networkStatus: NetworkStatus = NetworkStatus.LOST,
 )

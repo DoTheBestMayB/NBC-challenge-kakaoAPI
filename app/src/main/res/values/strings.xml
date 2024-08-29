@@ -4,4 +4,5 @@
     <string name="bookmark">북마크</string>
     <string name="hint_for_text_field">검색어</string>
     <string name="internet_is_not_connected">인터넷이 연결되어 있지 않습니다.</string>
+    <string name="internet_is_connected">인터넷이 연결되었습니다.</string>
 </resources>

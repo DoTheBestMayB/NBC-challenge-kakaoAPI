@@ -19,7 +19,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.FragmentSearchBinding
+import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.network.NetworkStatus
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -35,6 +38,8 @@ class SearchFragment : Fragment() {
     private val searchAdapter = SearchAdapter { item ->
         viewModel.onBookmarkClick(item)
     }
+
+    private var networkStatusHandleJob: Job? = null
 
     private val itemDecoration = object : ItemDecoration() {
 
@@ -125,21 +130,36 @@ class SearchFragment : Fragment() {
                     if (state.isLoading) {
                         return@collect
                     }
-                    when (state.error) {
-                        SearchErrorType.NONE -> Unit
-                        SearchErrorType.INTERNET_IS_NOT_CONNECTED -> {
-                            // TODO : 인터넷 연결 상태를 나타내는 하단바로 변경
-                            Toast.makeText(
-                                requireContext(),
-                                getString(R.string.internet_is_not_connected),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                    when (state.networkStatus) {
+                        NetworkStatus.AVAILABLE -> hideNetworkStatusBar()
+                        NetworkStatus.LOST -> showNetworkStatusBar()
                     }
                     searchAdapter.submitList(state.searchResult)
                 }
             }
         }
+    }
+
+    private fun hideNetworkStatusBar() {
+        binding.tvNetworkStatus.text = getString(R.string.internet_is_connected)
+        binding.tvNetworkStatus.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green))
+
+        networkStatusHandleJob?.cancel()
+
+        networkStatusHandleJob = viewLifecycleOwner.lifecycleScope.launch {
+            delay(2000L)
+            binding.tvNetworkStatus.visibility = View.GONE
+        }
+    }
+
+    private fun showNetworkStatusBar() {
+        binding.tvNetworkStatus.text = getString(R.string.internet_is_not_connected)
+        binding.tvNetworkStatus.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray))
+
+        networkStatusHandleJob?.cancel()
+        networkStatusHandleJob = null
+
+        binding.tvNetworkStatus.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {

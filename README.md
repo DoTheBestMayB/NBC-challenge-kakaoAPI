@@ -44,3 +44,14 @@ GET에 Body를 사용하려한 이유는, 사용하지 못한다는 것을 몰�
 API 요청을 위한 query, sort, page, size 값은 안전할 필요가 없으므로 query parameter로 전달해도 될 것 같다.
 
 https://apidog.com/blog/http-get-request-with-body/
+
+### LocalDateTime Formatter
+
+Kakao API 명세에 문저 작성시간 포맷이 `[YYYY]-[MM]-[DD]T[hh]:[mm]:[ss].000+[tz]` 라고 적혀있다. 괄호 `[`, `]`는 선택적으로 제공될 수도 있다는 의미이다.
+예를 들어, `2019-01-09T15:55` 입력이 주어질 때, 아래의 format 으로는 parsing 할 수 없다.
+
+`yyyy-MM-dd'T'HH:mm:ss.SSSXXX`
+
+초 단위 아래가 제공되지 않았기 때문으로, optional의 의미인 괄호를 추가해줘야 한다. 이때, symbol 앞의 `:`, `.` 등도 포함해야 함에 주의하자.
+
+`yyyy-MM-dd'T'HH[:mm][:ss][.SSS][XXX]`

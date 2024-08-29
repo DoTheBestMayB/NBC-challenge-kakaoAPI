@@ -2,10 +2,10 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.di
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.BuildConfig
 import com.dothebestmayb.nbc_challenge_kakaoapi.config.Logging
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.adapter.DocumentAdapter
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.model.response.Document
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.adapter.LocalDateTimeAdapter
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.service.KakaoService
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,7 +27,8 @@ internal object NetworkModule {
     @Singleton
     fun provideMoshi(): Moshi {
         return Moshi.Builder()
-            .add(Document::class.java, DocumentAdapter())
+            .add(LocalDateTimeAdapter())
+            .addLast(KotlinJsonAdapterFactory())
             .build()
     }
 

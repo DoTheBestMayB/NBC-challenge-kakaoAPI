@@ -1,5 +1,6 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.di
 
+import com.dothebestmayb.nbc_challenge_kakaoapi.BuildConfig
 import com.dothebestmayb.nbc_challenge_kakaoapi.config.Logging
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.adapter.DocumentAdapter
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.model.response.Document
@@ -9,6 +10,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -45,9 +47,23 @@ internal object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+    fun providesKeyInterceptor(): Interceptor {
+        return Interceptor { chain ->
+            val request = chain.request()
+            val headers = request.headers.newBuilder().add("Authorization", "KakaoAK ${BuildConfig.KAKAO_API_KEY}").build()
+            return@Interceptor chain.proceed(request.newBuilder().headers(headers).build())
+        }
+    }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        keyInterceptor: Interceptor,
+    ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(keyInterceptor)
             .build()
     }
 

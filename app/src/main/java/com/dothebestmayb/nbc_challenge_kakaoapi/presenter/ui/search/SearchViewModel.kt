@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
 import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.network.ConnectivityObserver
+import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.SearchItem
+import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.SearchUiState
 import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.util.toUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

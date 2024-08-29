@@ -10,6 +10,8 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemNotYetImplementSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemVideoSearchResultBinding
+import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.SearchItem
+import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.SearchType
 import java.time.format.DateTimeFormatter
 
 class SearchAdapter(

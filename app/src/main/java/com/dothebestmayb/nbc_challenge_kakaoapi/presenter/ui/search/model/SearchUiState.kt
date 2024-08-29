@@ -1,4 +1,4 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search
+package com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.network.NetworkStatus
 

@@ -1,4 +1,4 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search
+package com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model
 
 import java.time.LocalDateTime
 

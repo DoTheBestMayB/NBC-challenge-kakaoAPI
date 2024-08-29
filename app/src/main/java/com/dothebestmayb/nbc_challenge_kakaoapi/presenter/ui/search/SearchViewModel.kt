@@ -23,7 +23,7 @@ class SearchViewModel @Inject constructor(
 
     private var currentSearchKeyword: String = ""
     private var page = 1
-    private var size = 80
+    private var size = 20
 
     fun onBookmarkClick(item: SearchItem) {
         viewModelScope.launch {

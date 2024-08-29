@@ -21,7 +21,7 @@ class SearchAdapter(
     ) : ViewHolder(binding.root) {
 
         fun bind(item: SearchItem) {
-            binding.btnBookmark.setOnClickListener {
+            binding.ivBookmark.setOnClickListener {
                 bookmarkOnClickListener.onClick(item)
             }
 
@@ -40,7 +40,7 @@ class SearchAdapter(
                     R.drawable.baseline_bookmark_border_24
                 }
             }
-            binding.ivThumbnail.load(drawable)
+            binding.ivBookmark.load(drawable)
         }
     }
 

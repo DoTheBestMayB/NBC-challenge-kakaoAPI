@@ -10,6 +10,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.R
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemNotYetImplementSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemVideoSearchResultBinding
+import java.time.format.DateTimeFormatter
 
 class SearchAdapter(
     private val bookmarkOnClickListener: BookmarkOnClickListener,
@@ -26,7 +27,7 @@ class SearchAdapter(
             }
 
             binding.ivThumbnail.load(item.thumbnail)
-            binding.tvDate.text = item.datetime.toString()
+            binding.tvDate.text = item.datetime.format(dateFormat)
 
             setBookmark(item)
         }
@@ -55,7 +56,7 @@ class SearchAdapter(
             }
 
             binding.ivThumbnail.load(item.thumbnail)
-            binding.tvDate.text = item.datetime.toString()
+            binding.tvDate.text = item.datetime.format(dateFormat)
 
             setBookmark(item)
         }
@@ -128,6 +129,8 @@ class SearchAdapter(
     }
 
     companion object {
+        private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
         private val diff = object : DiffUtil.ItemCallback<SearchItem>() {
             override fun areItemsTheSame(oldItem: SearchItem, newItem: SearchItem): Boolean {
                 return oldItem.thumbnail == newItem.thumbnail

@@ -4,7 +4,7 @@ import com.squareup.moshi.JsonClass
 
 
 @JsonClass(generateAdapter = true)
-data class SearchImageResponse(
+data class SearchResponse<out T : SearchDocumentResponse>(
     val meta: Meta,
-    val documents: List<Document>,
+    val documents: List<T>,
 )

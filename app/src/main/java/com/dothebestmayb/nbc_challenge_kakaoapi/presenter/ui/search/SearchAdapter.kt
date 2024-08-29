@@ -23,7 +23,7 @@ class SearchAdapter(
         private val bookmarkOnClickListener: BookmarkOnClickListener,
     ) : ViewHolder(binding.root) {
 
-        fun bind(item: SearchItem) {
+        fun bind(item: SearchItem.Image) {
             binding.ivBookmark.setOnClickListener {
                 bookmarkOnClickListener.onClick(item)
             }
@@ -40,11 +40,12 @@ class SearchAdapter(
             setBookmark(item)
         }
 
-        private fun setBookmark(item: SearchItem) {
-            val drawable = when(item.isBookmarked) {
+        private fun setBookmark(item: SearchItem.Image) {
+            val drawable = when (item.isBookmarked) {
                 true -> {
                     R.drawable.baseline_bookmark_24
                 }
+
                 false -> {
                     R.drawable.baseline_bookmark_border_24
                 }
@@ -58,8 +59,8 @@ class SearchAdapter(
         private val bookmarkOnClickListener: BookmarkOnClickListener,
     ) : ViewHolder(binding.root) {
 
-        fun bind(item: SearchItem) {
-            binding.btnBookmark.setOnClickListener {
+        fun bind(item: SearchItem.Video) {
+            binding.ivBookmark.setOnClickListener {
                 bookmarkOnClickListener.onClick(item)
             }
 
@@ -69,16 +70,17 @@ class SearchAdapter(
             setBookmark(item)
         }
 
-        private fun setBookmark(item: SearchItem) {
-            val drawable = when(item.isBookmarked) {
+        private fun setBookmark(item: SearchItem.Video) {
+            val drawable = when (item.isBookmarked) {
                 true -> {
                     R.drawable.baseline_bookmark_24
                 }
+
                 false -> {
                     R.drawable.baseline_bookmark_border_24
                 }
             }
-            binding.ivThumbnail.load(drawable)
+            binding.ivBookmark.load(drawable)
         }
     }
 
@@ -123,16 +125,16 @@ class SearchAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
-            is ImageSearchViewHolder -> holder.bind(getItem(position))
-            is VideoSearchViewHolder -> holder.bind(getItem(position))
+            is ImageSearchViewHolder -> holder.bind(getItem(position) as SearchItem.Image)
+            is VideoSearchViewHolder -> holder.bind(getItem(position) as SearchItem.Video)
             is NotImplementedYetViewHolder -> holder.bind(getItem(position))
         }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (getItem(position).type) {
-            SearchType.IMAGE -> SearchType.IMAGE.viewTypeNum
-            SearchType.VIDEO -> SearchType.VIDEO.viewTypeNum
+        return when (getItem(position)) {
+            is SearchItem.Image -> SearchType.IMAGE.viewTypeNum
+            is SearchItem.Video -> SearchType.VIDEO.viewTypeNum
         }
     }
 
@@ -141,7 +143,13 @@ class SearchAdapter(
 
         private val diff = object : DiffUtil.ItemCallback<SearchItem>() {
             override fun areItemsTheSame(oldItem: SearchItem, newItem: SearchItem): Boolean {
-                return oldItem.thumbnail == newItem.thumbnail
+                return if (oldItem is SearchItem.Image && newItem is SearchItem.Image) {
+                    oldItem.thumbnail == newItem.thumbnail
+                } else if (oldItem is SearchItem.Video && newItem is SearchItem.Video) {
+                    oldItem.thumbnail == newItem.thumbnail
+                } else {
+                    false
+                }
             }
 
             override fun areContentsTheSame(oldItem: SearchItem, newItem: SearchItem): Boolean {

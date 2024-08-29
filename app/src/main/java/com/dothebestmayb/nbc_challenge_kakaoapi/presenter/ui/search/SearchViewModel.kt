@@ -2,12 +2,14 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.SearchInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
 import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.network.ConnectivityObserver
 import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.SearchItem
 import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.SearchUiState
 import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.util.toUi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +28,8 @@ class SearchViewModel @Inject constructor(
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private var currentSearchKeyword: String = ""
-    private var page = 1
+    private var imageSearchPage = 1
+    private var videoSearchPage = 1
     private var size = 20
 
     init {
@@ -66,14 +69,23 @@ class SearchViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            kakaoSearchRepository.fetchImage(keyword, page, size)
+            val image = async {
+                kakaoSearchRepository.fetchImage(keyword, imageSearchPage, size)
+            }
+            kakaoSearchRepository.fetchVideo(keyword, videoSearchPage, size)
+            image.await()
 
             kakaoSearchRepository.getItems(currentSearchKeyword).distinctUntilChanged()
                 .collectLatest { items ->
                     _uiState.emit(
                         _uiState.value.copy(
                             isLoading = false,
-                            searchResult = items.map { it.toUi() },
+                            searchResult = items.map {
+                                when (it) {
+                                    is SearchInfo.ImageSearchInfo -> it.toUi()
+                                    is SearchInfo.VideoSearchInfo -> it.toUi()
+                                }
+                            }.sortedByDescending { it.datetime },
                         )
                     )
                 }

@@ -30,3 +30,17 @@ https://stackoverflow.com/a/47409159/11722881
 Database 내부에서 Dao 객체를 싱글턴으로 반환하고 있기 때문에, Database만 singleton으로 주입하면 Dao도 자동으로 Singleton으로 사용할 수 있다.
 
 ![image](https://github.com/user-attachments/assets/3ac99e4a-5885-4a69-9567-39ed9cdd9c25)
+
+### GET method는 Body를 사용하지 않는다
+
+GET, DELETE method는 Body를 사용하지 않는다. 반면 POST, PUT method는 Body가 있어야만 한다.
+
+Body를 사용하지 않는 이유는 다음과 같다.
+
+1. HTTP Spec에서 GET method 요청은 재전송에 안전해야 하는데, Body는 재전송시 의도하지 않은 side-effect를 유발할 수 있다.
+2. GET Result는 캐싱과 재전송이 자주 일어나는데, Body가 있으면 캐싱이 동작하지 않는다. 
+
+GET에 Body를 사용하려한 이유는, 사용하지 못한다는 것을 몰랐고, query parameter를 전달하는 것보다 Body를 통해 전달하는 것이 더 안전하다고 생각했기 때문이다.
+API 요청을 위한 query, sort, page, size 값은 안전할 필요가 없으므로 query parameter로 전달해도 될 것 같다.
+
+https://apidog.com/blog/http-get-request-with-body/

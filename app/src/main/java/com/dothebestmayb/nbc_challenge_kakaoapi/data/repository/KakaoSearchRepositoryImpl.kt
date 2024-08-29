@@ -3,7 +3,6 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.data.repository
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.datasource.KakaoLocalDataSource
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.entity.ImageSearchEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.datasource.KakaoRemoteDataSource
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.model.GetImageRequest
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.model.SortType
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.ImageSearchInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
@@ -26,7 +25,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
 
     override suspend fun fetchImage(query: String, page: Int, size: Int, sort: SortType) {
         try {
-            val response = kakaoRemoteDataSource.getImage(GetImageRequest(query, sort, page, size))
+            val response = kakaoRemoteDataSource.getImage(query, sort, page, size)
             kakaoLocalDataSource.insertImage(response.documents.map {
                 ImageSearchEntity(
                     imageUrl = it.imageUrl,

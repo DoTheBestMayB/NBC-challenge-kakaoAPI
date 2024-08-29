@@ -33,7 +33,7 @@ class SearchViewModel @Inject constructor(
                 _uiState.emit(_uiState.value.copy(networkStatus = status))
 
                 // 인터넷이 다시 연결된 경우, 데이터가 비어있을 때 재로딩 시도
-                if (_uiState.value.searchResult.isEmpty()) {
+                if (currentSearchKeyword.isNotBlank() && _uiState.value.searchResult.isEmpty()) {
                     onSearch(currentSearchKeyword, true)
                 }
             }
@@ -48,6 +48,13 @@ class SearchViewModel @Inject constructor(
 
     fun onSearch(keyword: String, isResearch: Boolean = false) {
         if (isResearch.not() && keyword == currentSearchKeyword) {
+            return
+        }
+        if (keyword.isBlank()) {
+            _uiState.value = _uiState.value.copy(
+                isLoading = false,
+                searchResult = emptyList(),
+            )
             return
         }
         currentSearchKeyword = keyword

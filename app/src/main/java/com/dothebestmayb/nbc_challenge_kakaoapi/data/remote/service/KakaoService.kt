@@ -23,7 +23,7 @@ interface KakaoService {
         ) size: Int = IMAGE_DEFAULT_DATA_SIZE,
     ): SearchResponse<SearchDocumentResponse.ImageDocument>
 
-    @GET("search/video")
+    @GET("search/vclip")
     suspend fun getVideo(
         @Query("query") query: String,
         @Query("sort") sort: SortType = SortType.ACCURACY,

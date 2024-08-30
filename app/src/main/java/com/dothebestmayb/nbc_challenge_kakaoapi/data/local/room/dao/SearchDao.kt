@@ -4,27 +4,20 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.entity.ImageSearchEntity
-import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.entity.VideoSearchEntity
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.entity.SearchEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SearchDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertImage(imageSearchEntities: List<ImageSearchEntity>)
+    suspend fun insertImage(imageSearchEntities: List<SearchEntity>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertVideo(videoSearchEntities: List<VideoSearchEntity>)
+    suspend fun insertVideo(videoSearchEntities: List<SearchEntity>)
 
-    @Query("DELETE FROM ImageSearchEntity WHERE search_keyword = :keyword")
-    suspend fun deleteAllImage(keyword: String)
+    @Query("DELETE FROM SearchEntity WHERE search_keyword = :keyword")
+    suspend fun deleteAll(keyword: String)
 
-    @Query("DELETE FROM VideoSearchEntity WHERE search_keyword = :keyword")
-    suspend fun deleteAllVideo(keyword: String)
-
-    @Query("SELECT * FROM ImageSearchEntity WHERE search_keyword = :keyword")
-    fun loadAllImage(keyword: String): Flow<List<ImageSearchEntity>>
-
-    @Query("SELECT * FROM VideoSearchEntity WHERE search_keyword = :keyword")
-    fun loadAllVideo(keyword: String): Flow<List<VideoSearchEntity>>
+    @Query("SELECT * FROM SearchEntity WHERE search_keyword = :keyword")
+    fun loadAll(keyword: String): Flow<List<SearchEntity>>
 }

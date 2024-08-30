@@ -14,7 +14,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.Search
 import java.time.format.DateTimeFormatter
 
 class SearchAdapter(
-    private val bookmarkOnClickListener: BookmarkOnClickListener,
+    private val searchOnClickListener: SearchOnClickListener,
 ) : ListAdapter<SearchItem, ViewHolder>(diff) {
 
     private enum class ItemType(val viewTypeNum: Int) {
@@ -23,12 +23,12 @@ class SearchAdapter(
 
     class ImageSearchViewHolder(
         private val binding: ItemImageSearchResultBinding,
-        private val bookmarkOnClickListener: BookmarkOnClickListener,
+        private val searchOnClickListener: SearchOnClickListener,
     ) : ViewHolder(binding.root) {
 
         fun bind(item: SearchItem.Image) {
             binding.ivBookmark.setOnClickListener {
-                bookmarkOnClickListener.onClick(item)
+                searchOnClickListener.onBookmarkClick(item)
             }
 
             binding.cpiLoading.show()
@@ -59,12 +59,12 @@ class SearchAdapter(
 
     class VideoSearchViewHolder(
         private val binding: ItemVideoSearchResultBinding,
-        private val bookmarkOnClickListener: BookmarkOnClickListener,
+        private val searchOnClickListener: SearchOnClickListener,
     ) : ViewHolder(binding.root) {
 
         fun bind(item: SearchItem.Video) {
             binding.ivBookmark.setOnClickListener {
-                bookmarkOnClickListener.onClick(item)
+                searchOnClickListener.onBookmarkClick(item)
             }
 
             binding.ivThumbnail.load(item.thumbnail)
@@ -104,7 +104,7 @@ class SearchAdapter(
                     parent,
                     false
                 ),
-                bookmarkOnClickListener = bookmarkOnClickListener,
+                searchOnClickListener = searchOnClickListener,
             )
 
             ItemType.VIDEO.viewTypeNum -> VideoSearchViewHolder(
@@ -113,7 +113,7 @@ class SearchAdapter(
                     parent,
                     false
                 ),
-                bookmarkOnClickListener = bookmarkOnClickListener,
+                searchOnClickListener = searchOnClickListener,
             )
 
             else -> NotImplementedYetViewHolder(

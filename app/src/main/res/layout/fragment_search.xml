@@ -74,9 +74,11 @@
         android:padding="4dp"
         android:textAlignment="center"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/internet_is_not_connected" />
+        tools:text="@string/internet_is_not_connected"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

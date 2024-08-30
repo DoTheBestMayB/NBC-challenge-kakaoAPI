@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -155,6 +156,7 @@ class SearchFragment : Fragment() {
                         when (state.networkStatus) {
                             NetworkStatus.AVAILABLE -> hideNetworkStatusBar()
                             NetworkStatus.LOST -> showNetworkStatusBar()
+                            NetworkStatus.NOT_YET_CHECKED -> Unit
                         }
                         searchAdapter.submitList(state.searchResult)
                     }
@@ -174,6 +176,10 @@ class SearchFragment : Fragment() {
     }
 
     private fun hideNetworkStatusBar() {
+        if (binding.tvNetworkStatus.isVisible.not()) {
+            return
+        }
+
         binding.tvNetworkStatus.text = getString(R.string.internet_is_connected)
         binding.tvNetworkStatus.setBackgroundColor(
             ContextCompat.getColor(
@@ -191,6 +197,10 @@ class SearchFragment : Fragment() {
     }
 
     private fun showNetworkStatusBar() {
+        if (binding.tvNetworkStatus.isVisible) {
+            return
+        }
+
         binding.tvNetworkStatus.text = getString(R.string.internet_is_not_connected)
         binding.tvNetworkStatus.setBackgroundColor(
             ContextCompat.getColor(

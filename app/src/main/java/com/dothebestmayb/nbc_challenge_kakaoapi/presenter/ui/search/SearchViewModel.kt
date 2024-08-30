@@ -78,6 +78,8 @@ class SearchViewModel @Inject constructor(
         if (isResearch.not() && keyword == currentSearchKeyword) {
             return
         }
+        resetSearchConfig(keyword)
+
         if (keyword.isBlank()) {
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
@@ -86,7 +88,6 @@ class SearchViewModel @Inject constructor(
             fetchJob?.cancel()
             return
         }
-        resetSearchConfig(keyword)
         collectResultAs(keyword)
         fetchData()
     }

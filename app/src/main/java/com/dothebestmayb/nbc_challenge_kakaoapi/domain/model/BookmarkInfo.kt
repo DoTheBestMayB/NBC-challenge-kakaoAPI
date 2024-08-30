@@ -2,7 +2,7 @@ package com.dothebestmayb.nbc_challenge_kakaoapi.domain.model
 
 import java.time.LocalDateTime
 
-sealed interface SearchInfo {
+sealed interface BookmarkInfo {
     data class Image(
         val thumbnailUrl: String,
         val imageUrl: String,
@@ -11,7 +11,7 @@ sealed interface SearchInfo {
         val datetime: LocalDateTime,
         val searchKeyword: String,
         val bookmarked: Boolean,
-    ) : SearchInfo
+    ) : BookmarkInfo
 
     data class Video(
         val title: String,
@@ -21,5 +21,5 @@ sealed interface SearchInfo {
         val thumbnail: String,
         val searchKeyword: String,
         val bookmarked: Boolean,
-    ) : SearchInfo
+    ) : BookmarkInfo
 }

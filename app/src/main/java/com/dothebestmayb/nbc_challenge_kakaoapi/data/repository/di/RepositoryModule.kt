@@ -1,6 +1,8 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.repository.di
 
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.repository.BookmarkRepositoryImpl
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.repository.KakaoSearchRepositoryImpl
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.BookmarkRepository
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
 import dagger.Binds
 import dagger.Module
@@ -15,4 +17,8 @@ internal abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindsKakaoRepository(kakaoSearchRepositoryImpl: KakaoSearchRepositoryImpl): KakaoSearchRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsBookmarkRepository(bookmarkRepositoryImpl: BookmarkRepositoryImpl): BookmarkRepository
 }

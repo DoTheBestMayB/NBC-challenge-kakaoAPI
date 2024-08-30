@@ -1,14 +1,14 @@
-package com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model
+package com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.bookmark.model
 
-import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.SearchInfo
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.BookmarkInfo
 import java.time.LocalDateTime
 
-sealed interface SearchItem {
+sealed interface BookmarkItem {
 
     val datetime: LocalDateTime
 
-    fun switchBookmarkState(): SearchItem
-    fun toDomain(): SearchInfo
+    fun switchBookmarkState(): BookmarkItem
+    fun toDomain(): BookmarkInfo
 
     data class Image(
         override val datetime: LocalDateTime,
@@ -18,13 +18,13 @@ sealed interface SearchItem {
         val docUrl: String,
         val bookmarked: Boolean,
         val searchKeyword: String,
-    ) : SearchItem {
-        override fun switchBookmarkState(): SearchItem {
+    ) : BookmarkItem {
+        override fun switchBookmarkState(): BookmarkItem {
             return copy(bookmarked = bookmarked.not())
         }
 
-        override fun toDomain(): SearchInfo {
-            return SearchInfo.Image(
+        override fun toDomain(): BookmarkInfo {
+            return BookmarkInfo.Image(
                 thumbnailUrl = thumbnail,
                 imageUrl = thumbnail,
                 displaySiteName = displaySiteName,
@@ -44,13 +44,13 @@ sealed interface SearchItem {
         val thumbnail: String,
         val bookmarked: Boolean,
         val searchKeyword: String,
-    ) : SearchItem {
-        override fun switchBookmarkState(): SearchItem {
+    ) : BookmarkItem {
+        override fun switchBookmarkState(): BookmarkItem {
             return copy(bookmarked = bookmarked.not())
         }
 
-        override fun toDomain(): SearchInfo {
-            return SearchInfo.Video(
+        override fun toDomain(): BookmarkInfo {
+            return BookmarkInfo.Video(
                 title = title,
                 url = url,
                 datetime = datetime,

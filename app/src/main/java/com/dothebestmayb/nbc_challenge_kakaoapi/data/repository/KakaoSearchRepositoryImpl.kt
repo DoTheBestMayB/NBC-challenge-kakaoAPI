@@ -25,7 +25,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
         return kakaoLocalDataSource.loadAllItem(query).map { items ->
             items.map { entity ->
                 when (entity.type) {
-                    SearchEntity.SearchType.IMAGE -> SearchInfo.ImageSearchInfo(
+                    SearchEntity.SearchType.IMAGE -> SearchInfo.Image(
                         thumbnailUrl = entity.thumbnailUrl,
                         imageUrl = entity.url,
                         displaySiteName = entity.displaySiteName.orEmpty(),
@@ -35,7 +35,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
                         bookmarked = entity.bookmarked,
                     )
 
-                    SearchEntity.SearchType.VIDEO -> SearchInfo.VideoSearchInfo(
+                    SearchEntity.SearchType.VIDEO -> SearchInfo.Video(
                         title = entity.title.orEmpty(),
                         url = entity.url,
                         datetime = entity.datetime,

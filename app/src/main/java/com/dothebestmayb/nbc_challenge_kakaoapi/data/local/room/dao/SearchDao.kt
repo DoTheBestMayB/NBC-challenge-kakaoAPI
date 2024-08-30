@@ -49,4 +49,7 @@ interface SearchDao {
 
     @Query("SELECT * FROM SearchEntity WHERE search_keyword = :keyword ORDER BY datetime DESC")
     fun loadAll(keyword: String): Flow<List<SearchEntity>>
+
+    @Query("SELECT * FROM SearchEntity WHERE bookmarked = 1")
+    fun loadBookmarkedItem(): Flow<List<SearchEntity>>
 }

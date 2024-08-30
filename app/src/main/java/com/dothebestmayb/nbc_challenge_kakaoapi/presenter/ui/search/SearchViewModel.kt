@@ -112,8 +112,8 @@ class SearchViewModel @Inject constructor(
                         _uiState.value.copy(
                             searchResult = items.map {
                                 when (it) {
-                                    is SearchInfo.ImageSearchInfo -> it.toUi()
-                                    is SearchInfo.VideoSearchInfo -> it.toUi()
+                                    is SearchInfo.Image -> it.toUi()
+                                    is SearchInfo.Video -> it.toUi()
                                 }
                             },
                         )

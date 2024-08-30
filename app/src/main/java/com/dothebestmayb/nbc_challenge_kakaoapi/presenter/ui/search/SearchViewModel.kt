@@ -44,8 +44,13 @@ class SearchViewModel @Inject constructor(
     private var collectResultJob: Job? = null
 
     init {
+        setNetworkMonitor()
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun setNetworkMonitor() {
         viewModelScope.launch {
-            connectivityObserver.observe().collect { status ->
+            connectivityObserver.observe().debounce(1000L).collect { status ->
                 _uiState.emit(_uiState.value.copy(networkStatus = status))
 
                 // 인터넷이 연결된 경우

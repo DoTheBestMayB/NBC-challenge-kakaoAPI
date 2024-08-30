@@ -41,7 +41,7 @@ class SearchAdapter(
         }
 
         private fun setBookmark(item: SearchItem.Image) {
-            val drawable = when (item.isBookmarked) {
+            val drawable = when (item.bookmarked) {
                 true -> {
                     R.drawable.baseline_bookmark_24
                 }

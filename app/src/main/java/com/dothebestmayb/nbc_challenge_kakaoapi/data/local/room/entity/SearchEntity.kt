@@ -14,6 +14,7 @@ data class SearchEntity(
     @ColumnInfo(name = "thumbnail_url") val thumbnailUrl: String,
     val datetime: LocalDateTime,
     @ColumnInfo val type: SearchType,
+    val bookmarked: Boolean,
 
     // 이미지
     @ColumnInfo(name = "display_site_name") val displaySiteName: String? = null,

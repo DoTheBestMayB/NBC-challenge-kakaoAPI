@@ -8,16 +8,29 @@ import javax.inject.Inject
 class KakaoLocalDataSourceImpl @Inject constructor(
     private val searchDao: SearchDao,
 ) : KakaoLocalDataSource {
-    override suspend fun insertEntities(searchEntities: List<SearchEntity>) {
-        searchDao.insertSearchEntity(searchEntities)
+    override suspend fun insertItem(searchEntities: List<SearchEntity>) {
+        for (searchEntity in searchEntities) {
+            searchDao.insertSearchEntity(
+                searchEntity.url,
+                searchEntity.searchKeyword,
+                searchEntity.thumbnailUrl,
+                searchEntity.datetime.toString(),
+                searchEntity.type.toString(),
+                searchEntity.displaySiteName,
+                searchEntity.docUrl,
+                searchEntity.title,
+                searchEntity.playTime,
+                searchEntity.bookmarked
+            )
+        }
     }
 
-    override suspend fun insertVideo(videoSearchEntities: List<SearchEntity>) {
-        searchDao.insertVideo(videoSearchEntities)
+    override suspend fun deleteCachedItem(keyword: String) {
+        searchDao.deleteCached(keyword)
     }
 
-    override suspend fun deleteAll(keyword: String) {
-        searchDao.deleteAll(keyword)
+    override suspend fun updateItem(searchEntity: SearchEntity) {
+        searchDao.updateItem(searchEntity)
     }
 
     override fun loadAllItem(keyword: String): Flow<List<SearchEntity>> {

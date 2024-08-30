@@ -5,9 +5,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface KakaoLocalDataSource {
 
-    suspend fun insertEntities(searchEntities: List<SearchEntity>)
+    suspend fun insertItem(searchEntities: List<SearchEntity>)
 
-    suspend fun deleteAll(keyword: String)
+    suspend fun deleteCachedItem(keyword: String)
+
+    suspend fun updateItem(searchEntity: SearchEntity)
 
     fun loadAllItem(keyword: String): Flow<List<SearchEntity>>
 }

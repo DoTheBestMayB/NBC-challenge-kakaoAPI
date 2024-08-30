@@ -5,6 +5,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.entity.SearchEnt
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.datasource.KakaoRemoteDataSource
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.model.SortType
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.service.KakaoService
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.toEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.SearchInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,9 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
                         imageUrl = entity.url,
                         displaySiteName = entity.displaySiteName.orEmpty(),
                         docUrl = entity.docUrl.orEmpty(),
-                        datetime = entity.datetime
+                        datetime = entity.datetime,
+                        searchKeyword = query,
+                        bookmarked = entity.bookmarked,
                     )
 
                     SearchEntity.SearchType.VIDEO -> SearchInfo.VideoSearchInfo(
@@ -38,6 +41,8 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
                         datetime = entity.datetime,
                         playTime = entity.playTime ?: 0,
                         thumbnail = entity.thumbnailUrl,
+                        searchKeyword = query,
+                        bookmarked = entity.bookmarked,
                     )
                 }
             }
@@ -51,7 +56,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
 
         try {
             val response = kakaoRemoteDataSource.getImage(query, sort, page, size)
-            kakaoLocalDataSource.insertEntities(response.documents.map {
+            kakaoLocalDataSource.insertItem(response.documents.map {
                 SearchEntity(
                     url = it.imageUrl,
                     type = SearchEntity.SearchType.IMAGE,
@@ -60,6 +65,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
                     displaySiteName = it.displaySiteName,
                     docUrl = it.docUrl,
                     datetime = it.datetime,
+                    bookmarked = false,
                 )
             })
         } catch (_: Exception) {
@@ -75,7 +81,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
 
         try {
             val response = kakaoRemoteDataSource.getVideo(query, sort, page, size)
-            kakaoLocalDataSource.insertEntities(response.documents.map {
+            kakaoLocalDataSource.insertItem(response.documents.map {
                 SearchEntity(
                     url = it.url,
                     type = SearchEntity.SearchType.VIDEO,
@@ -84,6 +90,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
                     title = it.title,
                     datetime = it.datetime,
                     playTime = it.playTime,
+                    bookmarked = false,
                 )
             })
         } catch (_: Exception) {
@@ -97,5 +104,9 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
             SearchType.IMAGE -> page in KakaoService.IMAGE_MIN_PAGE_INDEX..KakaoService.IMAGE_MAX_PAGE_INDEX && size in KakaoService.IMAGE_MIN_DATA_SIZE..KakaoService.IMAGE_MAX_DATA_SIZE
             SearchType.VIDEO -> page in KakaoService.VIDEO_MIN_PAGE_INDEX..KakaoService.VIDEO_MAX_PAGE_INDEX && size in KakaoService.VIDEO_MIN_DATA_SIZE..KakaoService.VIDEO_MAX_DATA_SIZE
         }
+    }
+
+    override suspend fun updateItem(searchInfo: SearchInfo) {
+        kakaoLocalDataSource.updateItem(searchInfo.toEntity())
     }
 }

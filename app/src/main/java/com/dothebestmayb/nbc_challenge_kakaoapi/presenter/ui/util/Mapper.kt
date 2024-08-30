@@ -5,9 +5,12 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.Search
 
 fun SearchInfo.ImageSearchInfo.toUi() = SearchItem.Image(
     thumbnail = thumbnailUrl,
+    imageUrl = imageUrl,
+    displaySiteName = displaySiteName,
     datetime = datetime,
     docUrl = docUrl,
-    isBookmarked = false
+    bookmarked = bookmarked,
+    searchKeyword = searchKeyword,
 )
 
 fun SearchInfo.VideoSearchInfo.toUi() = SearchItem.Video(
@@ -16,5 +19,6 @@ fun SearchInfo.VideoSearchInfo.toUi() = SearchItem.Video(
     url = url,
     playTime = playTime,
     thumbnail = thumbnail,
-    isBookmarked = false,
+    isBookmarked = bookmarked,
+    searchKeyword = searchKeyword,
 )

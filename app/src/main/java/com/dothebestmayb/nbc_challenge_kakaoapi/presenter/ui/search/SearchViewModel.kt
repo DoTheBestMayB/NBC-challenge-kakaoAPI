@@ -70,7 +70,7 @@ class SearchViewModel @Inject constructor(
 
     fun onBookmarkClick(item: SearchItem) {
         viewModelScope.launch {
-            // TODO : 북마크 구현
+            kakaoSearchRepository.updateItem(item.switchBookmarkState().toDomain())
         }
     }
 

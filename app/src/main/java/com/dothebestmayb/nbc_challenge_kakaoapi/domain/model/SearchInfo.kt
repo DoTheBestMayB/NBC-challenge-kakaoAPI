@@ -9,6 +9,8 @@ sealed interface SearchInfo {
         val displaySiteName: String,
         val docUrl: String,
         val datetime: LocalDateTime,
+        val searchKeyword: String,
+        val bookmarked: Boolean,
     ) : SearchInfo
 
     data class VideoSearchInfo(
@@ -17,5 +19,7 @@ sealed interface SearchInfo {
         val datetime: LocalDateTime,
         val playTime: Int,
         val thumbnail: String,
+        val searchKeyword: String,
+        val bookmarked: Boolean,
     ) : SearchInfo
 }

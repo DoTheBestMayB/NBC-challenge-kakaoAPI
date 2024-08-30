@@ -22,4 +22,6 @@ interface KakaoSearchRepository {
         @IntRange(1, 30) size: Int,
         sort: SortType = SortType.ACCURACY,
     ): Boolean
+
+    suspend fun updateItem(searchInfo: SearchInfo)
 }

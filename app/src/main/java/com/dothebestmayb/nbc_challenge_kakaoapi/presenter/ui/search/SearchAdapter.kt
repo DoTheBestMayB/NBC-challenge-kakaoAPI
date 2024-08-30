@@ -11,12 +11,15 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemImageSearchResul
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemNotYetImplementSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.databinding.ItemVideoSearchResultBinding
 import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.SearchItem
-import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.SearchType
 import java.time.format.DateTimeFormatter
 
 class SearchAdapter(
     private val bookmarkOnClickListener: BookmarkOnClickListener,
 ) : ListAdapter<SearchItem, ViewHolder>(diff) {
+
+    private enum class ItemType(val viewTypeNum: Int) {
+        IMAGE(1), VIDEO(2)
+    }
 
     class ImageSearchViewHolder(
         private val binding: ItemImageSearchResultBinding,
@@ -95,7 +98,7 @@ class SearchAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
-            SearchType.IMAGE.viewTypeNum -> ImageSearchViewHolder(
+            ItemType.IMAGE.viewTypeNum -> ImageSearchViewHolder(
                 binding = ItemImageSearchResultBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
@@ -104,7 +107,7 @@ class SearchAdapter(
                 bookmarkOnClickListener = bookmarkOnClickListener,
             )
 
-            SearchType.VIDEO.viewTypeNum -> VideoSearchViewHolder(
+            ItemType.VIDEO.viewTypeNum -> VideoSearchViewHolder(
                 binding = ItemVideoSearchResultBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
@@ -133,8 +136,8 @@ class SearchAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is SearchItem.Image -> SearchType.IMAGE.viewTypeNum
-            is SearchItem.Video -> SearchType.VIDEO.viewTypeNum
+            is SearchItem.Image -> ItemType.IMAGE.viewTypeNum
+            is SearchItem.Video -> ItemType.VIDEO.viewTypeNum
         }
     }
 

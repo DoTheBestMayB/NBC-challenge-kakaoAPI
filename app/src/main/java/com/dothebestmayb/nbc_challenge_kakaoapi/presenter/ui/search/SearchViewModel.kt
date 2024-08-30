@@ -114,7 +114,7 @@ class SearchViewModel @Inject constructor(
                                     is SearchInfo.ImageSearchInfo -> it.toUi()
                                     is SearchInfo.VideoSearchInfo -> it.toUi()
                                 }
-                            }.sortedByDescending { it.datetime },
+                            },
                         )
                     )
                 }

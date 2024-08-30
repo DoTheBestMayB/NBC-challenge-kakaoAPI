@@ -18,6 +18,6 @@ interface SearchDao {
     @Query("DELETE FROM SearchEntity WHERE search_keyword = :keyword")
     suspend fun deleteAll(keyword: String)
 
-    @Query("SELECT * FROM SearchEntity WHERE search_keyword = :keyword")
+    @Query("SELECT * FROM SearchEntity WHERE search_keyword = :keyword ORDER BY datetime DESC")
     fun loadAll(keyword: String): Flow<List<SearchEntity>>
 }

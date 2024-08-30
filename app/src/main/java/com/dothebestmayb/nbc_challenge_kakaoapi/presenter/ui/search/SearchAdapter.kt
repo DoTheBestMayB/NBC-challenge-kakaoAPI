@@ -56,7 +56,7 @@ class SearchAdapter(
                     R.drawable.baseline_bookmark_border_24
                 }
             }
-            binding.ivBookmark.load(drawable)
+            binding.ivBookmark.setImageResource(drawable)
         }
     }
 

@@ -6,17 +6,18 @@ import java.time.LocalDateTime
 sealed interface SearchItem {
 
     val datetime: LocalDateTime
+    val bookmarked: Boolean
 
     fun switchBookmarkState(): SearchItem
     fun toDomain(): SearchInfo
 
     data class Image(
         override val datetime: LocalDateTime,
+        override val bookmarked: Boolean,
         val thumbnail: String,
         val imageUrl: String,
         val displaySiteName: String,
         val docUrl: String,
-        val bookmarked: Boolean,
         val searchKeyword: String,
     ) : SearchItem {
         override fun switchBookmarkState(): SearchItem {
@@ -38,11 +39,11 @@ sealed interface SearchItem {
 
     data class Video(
         override val datetime: LocalDateTime,
+        override val bookmarked: Boolean,
         val title: String,
         val url: String,
         val playTime: Int,
         val thumbnail: String,
-        val bookmarked: Boolean,
         val searchKeyword: String,
     ) : SearchItem {
         override fun switchBookmarkState(): SearchItem {

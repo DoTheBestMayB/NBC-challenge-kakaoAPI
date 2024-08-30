@@ -43,7 +43,10 @@ class SearchAdapter(
             setBookmark(item)
         }
 
-        private fun setBookmark(item: SearchItem.Image) {
+        fun setBookmark(item: SearchItem.Image) {
+            binding.ivBookmark.setOnClickListener {
+                searchOnClickListener.onBookmarkClick(item)
+            }
             val drawable = when (item.bookmarked) {
                 true -> {
                     R.drawable.baseline_bookmark_24
@@ -63,17 +66,17 @@ class SearchAdapter(
     ) : ViewHolder(binding.root) {
 
         fun bind(item: SearchItem.Video) {
-            binding.ivBookmark.setOnClickListener {
-                searchOnClickListener.onBookmarkClick(item)
-            }
-
             binding.ivThumbnail.load(item.thumbnail)
             binding.tvDate.text = item.datetime.format(dateFormat)
 
             setBookmark(item)
         }
 
-        private fun setBookmark(item: SearchItem.Video) {
+        fun setBookmark(item: SearchItem.Video) {
+            binding.ivBookmark.setOnClickListener {
+                searchOnClickListener.onBookmarkClick(item)
+            }
+
             val drawable = when (item.bookmarked) {
                 true -> {
                     R.drawable.baseline_bookmark_24
@@ -128,6 +131,25 @@ class SearchAdapter(
         }
     }
 
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+            return
+        }
+        for (payload in payloads) {
+            if ((payload as Boolean)) {
+                when (holder) {
+                    is ImageSearchViewHolder -> holder.setBookmark(getItem(position) as SearchItem.Image)
+                    is VideoSearchViewHolder -> holder.setBookmark(getItem(position) as SearchItem.Video)
+                    else -> {
+                        super.onBindViewHolder(holder, position, payloads)
+                        return
+                    }
+                }
+            }
+        }
+    }
+
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
             is SearchItem.Image -> ItemType.IMAGE.viewTypeNum
@@ -151,6 +173,19 @@ class SearchAdapter(
 
             override fun areContentsTheSame(oldItem: SearchItem, newItem: SearchItem): Boolean {
                 return oldItem == newItem
+            }
+
+            // 북마크 여부만 바뀐 경우 대응
+            override fun getChangePayload(oldItem: SearchItem, newItem: SearchItem): Boolean {
+                return when (oldItem) {
+                    is SearchItem.Image -> {
+                        oldItem == (newItem as SearchItem.Image).copy(bookmarked = newItem.bookmarked.not())
+                    }
+
+                    is SearchItem.Video -> {
+                        oldItem == (newItem as SearchItem.Video).copy(bookmarked = newItem.bookmarked.not())
+                    }
+                }
             }
 
         }

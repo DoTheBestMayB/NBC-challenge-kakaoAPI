@@ -146,7 +146,7 @@ class SearchAdapter(
                 return if (oldItem is SearchItem.Image && newItem is SearchItem.Image) {
                     oldItem.thumbnail == newItem.thumbnail
                 } else if (oldItem is SearchItem.Video && newItem is SearchItem.Video) {
-                    oldItem.thumbnail == newItem.thumbnail
+                    oldItem.url == newItem.url
                 } else {
                     false
                 }

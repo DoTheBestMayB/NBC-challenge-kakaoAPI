@@ -55,3 +55,10 @@ Kakao API 명세에 문저 작성시간 포맷이 `[YYYY]-[MM]-[DD]T[hh]:[mm]:[s
 초 단위 아래가 제공되지 않았기 때문으로, optional의 의미인 괄호를 추가해줘야 한다. 이때, symbol 앞의 `:`, `.` 등도 포함해야 함에 주의하자.
 
 `yyyy-MM-dd'T'HH[:mm][:ss][.SSS][XXX]`
+
+### Paging 라이브러리의 필요성
+
+endless loading을 onScrollListener를 이용해서 구현할 때 다음과 같은 어려움을 겪었다.
+
+1. scroll 행위에 따라 Listener 함수가 매우 많이 호출됨
+2. 더 이상 데이터를 불러올 수 없는 경우, 불필요한 listener 호출을 없애기 위해 removeOnScrollListener를 호출하고, 다시 데이터를 불러올 수 있으면 addOnScrollListener를 호출해야 함

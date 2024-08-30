@@ -89,12 +89,7 @@ class SearchAdapter(
 
     class NotImplementedYetViewHolder(
         binding: ItemNotYetImplementSearchResultBinding,
-    ) : ViewHolder(binding.root) {
-
-        fun bind(item: SearchItem) {
-
-        }
-    }
+    ) : ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
@@ -130,7 +125,6 @@ class SearchAdapter(
         when (holder) {
             is ImageSearchViewHolder -> holder.bind(getItem(position) as SearchItem.Image)
             is VideoSearchViewHolder -> holder.bind(getItem(position) as SearchItem.Video)
-            is NotImplementedYetViewHolder -> holder.bind(getItem(position))
         }
     }
 

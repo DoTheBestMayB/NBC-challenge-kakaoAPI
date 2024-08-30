@@ -88,13 +88,8 @@ class BookmarkAdapter(
     }
 
     class NotImplementedYetViewHolder(
-        private val binding: ItemNotYetImplementSearchResultBinding,
-    ) : ViewHolder(binding.root) {
-
-        fun bind(item: BookmarkItem) {
-
-        }
-    }
+        binding: ItemNotYetImplementSearchResultBinding,
+    ) : ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {

@@ -106,7 +106,7 @@ class SearchViewModel @Inject constructor(
 
         collectResultJob = viewModelScope.launch {
             kakaoSearchRepository.getItems(keyword).distinctUntilChanged()
-                .debounce(500L) // 이미지와 비디오 API 로딩에 시간 차이가 존재하여 설정
+                .debounce(300L) // 이미지와 비디오 API 로딩에 시간 차이가 존재하여 설정
                 .collectLatest { items ->
                     _uiState.emit(
                         _uiState.value.copy(

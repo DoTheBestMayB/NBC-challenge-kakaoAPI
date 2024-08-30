@@ -6,7 +6,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.SearchInfo
 fun SearchInfo.toEntity(): SearchEntity {
     return when (this) {
         is SearchInfo.ImageSearchInfo -> SearchEntity(
-            url = docUrl,
+            url = imageUrl,
             searchKeyword = searchKeyword,
             thumbnailUrl = thumbnailUrl,
             datetime = datetime,

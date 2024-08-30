@@ -12,7 +12,7 @@ interface KakaoService {
     @GET("search/image")
     suspend fun getImage(
         @Query("query") query: String,
-        @Query("sort") sort: SortType = SortType.ACCURACY,
+        @Query("sort") sort: SortType = SortType.RECENCY,
         @Query("page") @IntRange(
             IMAGE_MIN_PAGE_INDEX,
             IMAGE_MAX_PAGE_INDEX
@@ -26,7 +26,7 @@ interface KakaoService {
     @GET("search/vclip")
     suspend fun getVideo(
         @Query("query") query: String,
-        @Query("sort") sort: SortType = SortType.ACCURACY,
+        @Query("sort") sort: SortType = SortType.RECENCY,
         @Query("page") @IntRange(
             VIDEO_MIN_PAGE_INDEX,
             VIDEO_MAX_PAGE_INDEX

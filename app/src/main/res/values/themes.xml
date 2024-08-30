@@ -6,6 +6,8 @@
         <item name="android:windowBackground">@color/white</item>
         <item name="colorSurfaceContainer">@color/oc_gray_1</item> <!-- https://yeun.github.io/2016/09/25/general-usage-of-gray.html -->
         <item name="colorSecondaryContainer">@color/oc_gray_3</item>
+        <item name="android:textColorHighlight">@color/kakao_color</item>
+        <item name="colorPrimary">@color/kakao_color</item>
     </style>
 
     <style name="Theme.NBCchallengekakaoAPI" parent="Base.Theme.NBCchallengekakaoAPI" />

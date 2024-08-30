@@ -8,8 +8,8 @@ import javax.inject.Inject
 class KakaoLocalDataSourceImpl @Inject constructor(
     private val searchDao: SearchDao,
 ) : KakaoLocalDataSource {
-    override suspend fun insertImage(imageSearchEntities: List<SearchEntity>) {
-        searchDao.insertImage(imageSearchEntities)
+    override suspend fun insertEntities(searchEntities: List<SearchEntity>) {
+        searchDao.insertSearchEntity(searchEntities)
     }
 
     override suspend fun insertVideo(videoSearchEntities: List<SearchEntity>) {

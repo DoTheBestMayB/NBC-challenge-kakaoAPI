@@ -9,11 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SearchDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertImage(imageSearchEntities: List<SearchEntity>)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertVideo(videoSearchEntities: List<SearchEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSearchEntity(searchEntities: List<SearchEntity>)
 
     @Query("DELETE FROM SearchEntity WHERE search_keyword = :keyword")
     suspend fun deleteAll(keyword: String)

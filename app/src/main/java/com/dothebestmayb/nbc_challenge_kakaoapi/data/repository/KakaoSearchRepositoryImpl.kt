@@ -51,7 +51,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
 
         try {
             val response = kakaoRemoteDataSource.getImage(query, sort, page, size)
-            kakaoLocalDataSource.insertImage(response.documents.map {
+            kakaoLocalDataSource.insertEntities(response.documents.map {
                 SearchEntity(
                     url = it.imageUrl,
                     type = SearchEntity.SearchType.IMAGE,
@@ -75,7 +75,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
 
         try {
             val response = kakaoRemoteDataSource.getVideo(query, sort, page, size)
-            kakaoLocalDataSource.insertVideo(response.documents.map {
+            kakaoLocalDataSource.insertEntities(response.documents.map {
                 SearchEntity(
                     url = it.url,
                     type = SearchEntity.SearchType.VIDEO,

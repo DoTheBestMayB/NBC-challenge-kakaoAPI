@@ -5,9 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface KakaoLocalDataSource {
 
-    suspend fun insertImage(imageSearchEntities: List<SearchEntity>)
-
-    suspend fun insertVideo(videoSearchEntities: List<SearchEntity>)
+    suspend fun insertEntities(searchEntities: List<SearchEntity>)
 
     suspend fun deleteAll(keyword: String)
 

@@ -26,7 +26,7 @@ sealed interface BookmarkItem {
         override fun toDomain(): BookmarkInfo {
             return BookmarkInfo.Image(
                 thumbnailUrl = thumbnail,
-                imageUrl = thumbnail,
+                imageUrl = imageUrl,
                 displaySiteName = displaySiteName,
                 docUrl = docUrl,
                 datetime = datetime,

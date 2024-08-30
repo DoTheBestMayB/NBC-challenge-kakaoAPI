@@ -26,7 +26,7 @@ sealed interface SearchItem {
         override fun toDomain(): SearchInfo {
             return SearchInfo.Image(
                 thumbnailUrl = thumbnail,
-                imageUrl = thumbnail,
+                imageUrl = imageUrl,
                 displaySiteName = displaySiteName,
                 docUrl = docUrl,
                 datetime = datetime,

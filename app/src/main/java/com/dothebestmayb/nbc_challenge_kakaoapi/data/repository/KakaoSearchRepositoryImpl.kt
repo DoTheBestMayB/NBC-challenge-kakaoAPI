@@ -1,10 +1,10 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.repository
 
-import android.util.Log
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.datasource.KakaoLocalDataSource
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.entity.SearchEntity
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.datasource.KakaoRemoteDataSource
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.model.SortType
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.service.KakaoService
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.SearchInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +15,10 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
     private val kakaoRemoteDataSource: KakaoRemoteDataSource,
     private val kakaoLocalDataSource: KakaoLocalDataSource,
 ) : KakaoSearchRepository {
+
+    private enum class SearchType {
+        IMAGE, VIDEO
+    }
 
     override suspend fun getItems(query: String): Flow<List<SearchInfo>> {
         return kakaoLocalDataSource.loadAllItem(query).map { items ->
@@ -40,7 +44,11 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchImage(query: String, page: Int, size: Int, sort: SortType) {
+    override suspend fun fetchImage(query: String, page: Int, size: Int, sort: SortType): Boolean {
+        if (!checkRequestParameterValid(page, size, SearchType.IMAGE)) {
+            return false
+        }
+
         try {
             val response = kakaoRemoteDataSource.getImage(query, sort, page, size)
             kakaoLocalDataSource.insertImage(response.documents.map {
@@ -55,10 +63,16 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
                 )
             })
         } catch (_: Exception) {
+            return false
         }
+        return true
     }
 
-    override suspend fun fetchVideo(query: String, page: Int, size: Int, sort: SortType) {
+    override suspend fun fetchVideo(query: String, page: Int, size: Int, sort: SortType): Boolean {
+        if (!checkRequestParameterValid(page, size, SearchType.VIDEO)) {
+            return false
+        }
+
         try {
             val response = kakaoRemoteDataSource.getVideo(query, sort, page, size)
             kakaoLocalDataSource.insertVideo(response.documents.map {
@@ -73,6 +87,15 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
                 )
             })
         } catch (_: Exception) {
+            return false
+        }
+        return true
+    }
+
+    private fun checkRequestParameterValid(page: Int, size: Int, type: SearchType): Boolean {
+        return when (type) {
+            SearchType.IMAGE -> page in KakaoService.IMAGE_MIN_PAGE_INDEX..KakaoService.IMAGE_MAX_PAGE_INDEX && size in KakaoService.IMAGE_MIN_DATA_SIZE..KakaoService.IMAGE_MAX_DATA_SIZE
+            SearchType.VIDEO -> page in KakaoService.VIDEO_MIN_PAGE_INDEX..KakaoService.VIDEO_MAX_PAGE_INDEX && size in KakaoService.VIDEO_MIN_DATA_SIZE..KakaoService.VIDEO_MAX_DATA_SIZE
         }
     }
 }

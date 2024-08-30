@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import com.dothebestmayb.nbc_challenge_kakaoapi.R
@@ -61,6 +62,24 @@ class SearchFragment : Fragment() {
             // 관련 내용 : https://dodobest.tistory.com/115
             if (position != searchAdapter.itemCount - 1) {
                 outRect.set(0, 0, 0, marginSize)
+            }
+        }
+    }
+
+    private val endlessScrollListener by lazy {
+        object : RecyclerView.OnScrollListener() {
+            private val manager = binding.rvSearchResult.layoutManager as LinearLayoutManager
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val visibleItemCount = manager.childCount
+                val scrolledOutItemPosition = manager.findFirstVisibleItemPosition()
+                val totalItemCount = manager.itemCount
+
+                if (dy > 0 && (visibleItemCount + scrolledOutItemPosition > totalItemCount * 0.7)) {
+                    viewModel.fetchData()
+                }
             }
         }
     }
@@ -125,18 +144,30 @@ class SearchFragment : Fragment() {
     private fun setObserve() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect { state ->
-                    if (state.isLoading) {
-                        binding.cpiLoading.show()
-                        return@collect
-                    }
-                    binding.cpiLoading.hide()
+                launch {
+                    viewModel.uiState.collect { state ->
+                        if (state.isLoading) {
+                            binding.cpiLoading.show()
+                            return@collect
+                        }
+                        binding.cpiLoading.hide()
 
-                    when (state.networkStatus) {
-                        NetworkStatus.AVAILABLE -> hideNetworkStatusBar()
-                        NetworkStatus.LOST -> showNetworkStatusBar()
+                        when (state.networkStatus) {
+                            NetworkStatus.AVAILABLE -> hideNetworkStatusBar()
+                            NetworkStatus.LOST -> showNetworkStatusBar()
+                        }
+                        searchAdapter.submitList(state.searchResult)
                     }
-                    searchAdapter.submitList(state.searchResult)
+                }
+
+                launch {
+                    viewModel.isFetchAllowed.collect { isPossible ->
+                        if (isPossible) {
+                            binding.rvSearchResult.addOnScrollListener(endlessScrollListener)
+                        } else {
+                            binding.rvSearchResult.removeOnScrollListener(endlessScrollListener)
+                        }
+                    }
                 }
             }
         }
@@ -176,6 +207,7 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         binding.rvSearchResult.adapter = null
+        binding.rvSearchResult.clearOnScrollListeners()
         _binding = null
 
         super.onDestroyView()

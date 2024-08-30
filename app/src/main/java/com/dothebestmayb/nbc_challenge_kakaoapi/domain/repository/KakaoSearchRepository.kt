@@ -14,12 +14,12 @@ interface KakaoSearchRepository {
         @IntRange(1, 50) page: Int,
         @IntRange(1, 80) size: Int,
         sort: SortType = SortType.ACCURACY,
-    )
+    ): Boolean
 
     suspend fun fetchVideo(
         query: String,
         @IntRange(1, 15) page: Int,
         @IntRange(1, 30) size: Int,
         sort: SortType = SortType.ACCURACY,
-    )
+    ): Boolean
 }

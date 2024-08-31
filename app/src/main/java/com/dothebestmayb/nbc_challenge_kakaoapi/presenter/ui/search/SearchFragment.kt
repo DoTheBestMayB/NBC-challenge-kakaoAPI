@@ -1,9 +1,11 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search
 
+import android.annotation.SuppressLint
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -114,8 +116,9 @@ class SearchFragment : Fragment() {
         binding.rvSearchResult.addItemDecoration(itemDecoration)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setListener() {
-        binding.textFieldInput.setOnEditorActionListener { v, actionId, event ->
+        binding.textFieldInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
                 hideInput()
                 binding.vDummyForRemoveFocus.requestFocus()
@@ -125,7 +128,7 @@ class SearchFragment : Fragment() {
             }
             return@setOnEditorActionListener false
         }
-        binding.textFieldInput.setOnKeyListener { v, keyCode, event ->
+        binding.textFieldInput.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                 hideInput()
                 binding.vDummyForRemoveFocus.requestFocus()
@@ -135,11 +138,35 @@ class SearchFragment : Fragment() {
             }
             return@setOnKeyListener false
         }
-        binding.vDummyForRemoveFocus.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                hideInput()
-            }
+
+        binding.textFieldInput.setOnFocusChangeListener { _, hasFocus ->
+            changeSearchHistoryVisibility(hasFocus)
         }
+
+        binding.rvSearchHistory.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                if (binding.rvSearchHistory.findChildViewUnder(event.x, event.y) == null) {
+                    hideInput()
+                    binding.vDummyForRemoveFocus.requestFocus()
+
+                    changeSearchHistoryVisibility(false)
+                    return@setOnTouchListener true
+                }
+            }
+            false
+        }
+
+        binding.vSearchFocusBackground.setOnClickListener {
+            hideInput()
+            binding.vDummyForRemoveFocus.requestFocus()
+
+            changeSearchHistoryVisibility(false)
+        }
+    }
+
+    private fun changeSearchHistoryVisibility(isVisible: Boolean) {
+        binding.vSearchFocusBackground.isVisible = isVisible
+        binding.rvSearchHistory.isVisible = isVisible
     }
 
     private fun hideInput() {

@@ -6,6 +6,7 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.datasource.KakaoRemo
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.model.SortType
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.remote.service.KakaoService
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.util.toEntity
+import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.SearchHistoryInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.model.SearchInfo
 import com.dothebestmayb.nbc_challenge_kakaoapi.domain.repository.KakaoSearchRepository
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +22,7 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
         IMAGE, VIDEO
     }
 
-    override suspend fun getItems(query: String): Flow<List<SearchInfo>> {
+    override fun getItems(query: String): Flow<List<SearchInfo>> {
         return kakaoLocalDataSource.loadAllItem(query).map { items ->
             items.map { entity ->
                 when (entity.type) {
@@ -45,6 +46,14 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
                         bookmarked = entity.bookmarked,
                     )
                 }
+            }
+        }
+    }
+
+    override fun getSearchHistory(): Flow<List<SearchHistoryInfo>> {
+        return kakaoLocalDataSource.getSearchHistory().map { items ->
+            items.map {
+                it.toDomain()
             }
         }
     }
@@ -108,5 +117,13 @@ internal class KakaoSearchRepositoryImpl @Inject constructor(
 
     override suspend fun updateItem(searchInfo: SearchInfo) {
         kakaoLocalDataSource.updateItem(searchInfo.toEntity())
+    }
+
+    override suspend fun addHistory(query: String) {
+        kakaoLocalDataSource.addHistory(query)
+    }
+
+    override suspend fun deleteHistory(query: String) {
+        kakaoLocalDataSource.deleteHistory(query)
     }
 }

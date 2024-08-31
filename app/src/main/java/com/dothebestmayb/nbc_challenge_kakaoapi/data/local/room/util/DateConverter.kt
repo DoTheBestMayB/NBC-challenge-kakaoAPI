@@ -19,6 +19,6 @@ class DateConverter {
     }
 
     companion object {
-        const val DATETIME_FORMAT = "yyyy-MM-dd'T'HH[:mm][:ss][.SSS][XXX]"
+        const val DATETIME_FORMAT = "yyyy-MM-dd'T'HH[:mm][:ss][.SSSSSS][XXX]"
     }
 }

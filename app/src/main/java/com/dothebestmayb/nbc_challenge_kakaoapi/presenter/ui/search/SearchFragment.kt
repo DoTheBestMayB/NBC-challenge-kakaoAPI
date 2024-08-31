@@ -42,6 +42,17 @@ class SearchFragment : Fragment() {
         viewModel.onBookmarkClick(item)
     }
 
+    private val searchHistoryAdapter = SearchHistoryAdapter(object: SearchHistoryOnClickListener {
+        override fun onClick(query: String) {
+            binding.textField.editText?.setText(query)
+            search(query)
+        }
+
+        override fun onDelete(query: String) {
+            viewModel.onDeleteHistory(query)
+        }
+    })
+
     private var networkStatusHandleJob: Job? = null
 
     private val itemDecoration = object : ItemDecoration() {
@@ -114,26 +125,22 @@ class SearchFragment : Fragment() {
     private fun setRecyclerView() {
         binding.rvSearchResult.adapter = searchAdapter
         binding.rvSearchResult.addItemDecoration(itemDecoration)
+
+        binding.rvSearchHistory.adapter = searchHistoryAdapter
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setListener() {
         binding.textFieldInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
-                hideInput()
-                binding.vDummyForRemoveFocus.requestFocus()
-
-                viewModel.onSearch(binding.textField.editText?.text.toString())
+                search(binding.textField.editText?.text.toString())
                 return@setOnEditorActionListener true
             }
             return@setOnEditorActionListener false
         }
         binding.textFieldInput.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                hideInput()
-                binding.vDummyForRemoveFocus.requestFocus()
-
-                viewModel.onSearch(binding.textField.editText?.text.toString())
+                search(binding.textField.editText?.text.toString())
                 return@setOnKeyListener true
             }
             return@setOnKeyListener false
@@ -162,6 +169,13 @@ class SearchFragment : Fragment() {
 
             changeSearchHistoryVisibility(false)
         }
+    }
+
+    private fun search(query: String) {
+        hideInput()
+        binding.vDummyForRemoveFocus.requestFocus()
+
+        viewModel.onSearch(query)
     }
 
     private fun changeSearchHistoryVisibility(isVisible: Boolean) {
@@ -204,6 +218,12 @@ class SearchFragment : Fragment() {
                         } else {
                             binding.rvSearchResult.removeOnScrollListener(endlessScrollListener)
                         }
+                    }
+                }
+
+                launch {
+                    viewModel.searchHistory.collect {
+                        searchHistoryAdapter.submitList(it)
                     }
                 }
             }

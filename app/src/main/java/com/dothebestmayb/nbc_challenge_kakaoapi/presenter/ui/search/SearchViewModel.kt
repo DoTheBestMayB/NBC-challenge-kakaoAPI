@@ -10,15 +10,19 @@ import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.Search
 import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.search.model.SearchUiState
 import com.dothebestmayb.nbc_challenge_kakaoapi.presenter.ui.util.toUi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,6 +37,17 @@ class SearchViewModel @Inject constructor(
 
     private val _isFetchAllowed = MutableStateFlow(true)
     val isFetchAllowed: StateFlow<Boolean> = _isFetchAllowed.asStateFlow()
+
+    val searchHistory = kakaoSearchRepository.getSearchHistory().distinctUntilChanged()
+        .map { items ->
+            items.map {
+                it.toUi()
+            }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList(),
+        )
 
     private var currentSearchKeyword: String = ""
     private var imageSearchPage = 1
@@ -89,6 +104,7 @@ class SearchViewModel @Inject constructor(
             return
         }
         collectResultAs(keyword)
+        addHistory(keyword)
         fetchData()
     }
 
@@ -149,6 +165,18 @@ class SearchViewModel @Inject constructor(
                     isLoading = false,
                 )
             )
+        }
+    }
+
+    private fun addHistory(query: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            kakaoSearchRepository.addHistory(query)
+        }
+    }
+
+    fun onDeleteHistory(query: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            kakaoSearchRepository.deleteHistory(query)
         }
     }
 

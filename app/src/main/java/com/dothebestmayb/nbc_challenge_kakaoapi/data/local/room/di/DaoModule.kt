@@ -1,6 +1,7 @@
 package com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.di
 
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.dao.SearchDao
+import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.dao.SearchHistoryDao
 import com.dothebestmayb.nbc_challenge_kakaoapi.data.local.room.database.AppDatabase
 import dagger.Module
 import dagger.Provides
@@ -16,4 +17,8 @@ object DaoModule {
         database: AppDatabase,
     ): SearchDao = database.searchDao()
 
+    @Provides
+    fun providesSearchHistoryDao(
+        database: AppDatabase,
+    ): SearchHistoryDao = database.searchHistoryDao()
 }

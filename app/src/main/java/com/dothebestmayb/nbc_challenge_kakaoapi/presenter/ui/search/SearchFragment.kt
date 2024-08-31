@@ -48,6 +48,8 @@ class SearchFragment : Fragment() {
             binding.root.context.resources.getDimension(R.dimen.view_holder12).toInt()
         }
 
+        private val VIEW_LAST_POSITION_TAG_KEY = R.id.view_last_position_tag_key
+
         override fun getItemOffsets(
             outRect: Rect,
             view: View,
@@ -57,12 +59,18 @@ class SearchFragment : Fragment() {
             super.getItemOffsets(outRect, view, parent, state)
 
             val position = parent.getChildAdapterPosition(view)
+            view.setTag(VIEW_LAST_POSITION_TAG_KEY, position)
 
             // 마지막 Item은 margin을 설정하지 않음
             // Item을 recyclerView에서 삭제할 수 있다면 position이 -1일 때도 지워지기 전과 동일하도록 처리해야 함
             // 관련 내용 : https://dodobest.tistory.com/115
             if (position != searchAdapter.itemCount - 1) {
                 outRect.set(0, 0, 0, marginSize)
+            } else if (position == -1) {
+                val lastPosition = view.getTag(VIEW_LAST_POSITION_TAG_KEY) ?: return
+                if (lastPosition != searchAdapter.itemCount - 1) {
+                    outRect.set(0, 0, 0, marginSize)
+                }
             }
         }
     }

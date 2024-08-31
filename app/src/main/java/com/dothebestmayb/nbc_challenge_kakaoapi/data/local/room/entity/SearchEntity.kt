@@ -5,6 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.time.LocalDateTime
 
+/**
+ * @property url 이미지는 원본 이미지 URL, 비디오는 게시물 URL로 설정해야 함
+ */
 @Entity
 data class SearchEntity(
     @PrimaryKey val url: String,

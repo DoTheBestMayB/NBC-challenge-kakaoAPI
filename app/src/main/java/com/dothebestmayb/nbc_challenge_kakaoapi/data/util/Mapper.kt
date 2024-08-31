@@ -33,7 +33,7 @@ fun SearchInfo.toEntity(): SearchEntity {
 fun BookmarkInfo.toSearchEntity(): SearchEntity {
     return when (this) {
         is BookmarkInfo.Image -> SearchEntity(
-            url = docUrl,
+            url = imageUrl,
             searchKeyword = searchKeyword,
             thumbnailUrl = thumbnailUrl,
             datetime = datetime,

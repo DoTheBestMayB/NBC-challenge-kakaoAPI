@@ -6,30 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".presenter.ui.search.SearchFragment">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_field"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/side_margin24"
-        android:layout_marginTop="@dimen/top_margin12"
-        android:hint="@string/hint_for_text_field"
-        app:boxStrokeColor="@color/search_box_color"
-        app:endIconMode="clear_text"
-        app:hintTextColor="@color/kakao_color"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:startIconDrawable="@drawable/baseline_search_24">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/text_field_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeOptions="actionSearch"
-            android:inputType="text"
-            android:nextFocusForward="@id/v_dummy_for_remove_focus" />
-    </com.google.android.material.textfield.TextInputLayout>
-
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/cpi_loading"
         android:layout_width="0dp"
@@ -57,6 +33,53 @@
         tools:listitem="@layout/item_image_search_result" />
 
     <View
+        android:id="@+id/v_search_focus_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/focus_background"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_field"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/side_margin24"
+        android:layout_marginTop="@dimen/top_margin12"
+        android:background="@color/white"
+        android:hint="@string/hint_for_text_field"
+        app:boxStrokeColor="@color/search_box_color"
+        app:endIconMode="clear_text"
+        app:hintTextColor="@color/kakao_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:startIconDrawable="@drawable/baseline_search_24">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/text_field_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:nextFocusForward="@id/v_dummy_for_remove_focus" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search_history"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingVertical="@dimen/top_margin12"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="@id/text_field"
+        app:layout_constraintStart_toStartOf="@id/text_field"
+        app:layout_constraintTop_toBottomOf="@id/text_field"
+        tools:listitem="@layout/item_search_history"
+        tools:visibility="visible" />
+
+    <View
         android:id="@+id/v_dummy_for_remove_focus"
         android:layout_width="1dp"
         android:layout_height="1dp"
@@ -69,7 +92,7 @@
         android:id="@+id/tv_network_status"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/gray"
+        android:background="@color/network_not_connected"
         android:padding="4dp"
         android:textAlignment="center"
         android:textStyle="bold"

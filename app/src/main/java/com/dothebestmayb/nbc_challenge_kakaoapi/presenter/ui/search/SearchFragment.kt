@@ -192,7 +192,7 @@ class SearchFragment : Fragment() {
         binding.tvNetworkStatus.setBackgroundColor(
             ContextCompat.getColor(
                 requireContext(),
-                R.color.green
+                R.color.network_connected
             )
         )
 
@@ -213,7 +213,7 @@ class SearchFragment : Fragment() {
         binding.tvNetworkStatus.setBackgroundColor(
             ContextCompat.getColor(
                 requireContext(),
-                R.color.gray
+                R.color.network_not_connected
             )
         )
 

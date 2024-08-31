@@ -23,7 +23,7 @@ class SearchAdapter(
 
     class ImageSearchViewHolder(
         private val binding: ItemImageSearchResultBinding,
-        private val searchOnClickListener: SearchOnClickListener,
+        private val onBookmarkClick: (SearchItem) -> Unit,
     ) : ViewHolder(binding.root) {
 
         fun bind(item: SearchItem.Image) {
@@ -41,7 +41,7 @@ class SearchAdapter(
 
         fun setBookmark(item: SearchItem.Image) {
             binding.ivBookmark.setOnClickListener {
-                searchOnClickListener.onBookmarkClick(item)
+                onBookmarkClick(item)
             }
             val drawable = when (item.bookmarked) {
                 true -> {
@@ -58,7 +58,7 @@ class SearchAdapter(
 
     class VideoSearchViewHolder(
         private val binding: ItemVideoSearchResultBinding,
-        private val searchOnClickListener: SearchOnClickListener,
+        private val onBookmarkClick: (SearchItem) -> Unit,
     ) : ViewHolder(binding.root) {
 
         fun bind(item: SearchItem.Video) {
@@ -70,7 +70,7 @@ class SearchAdapter(
 
         fun setBookmark(item: SearchItem.Video) {
             binding.ivBookmark.setOnClickListener {
-                searchOnClickListener.onBookmarkClick(item)
+                onBookmarkClick(item)
             }
 
             val drawable = when (item.bookmarked) {
@@ -98,7 +98,7 @@ class SearchAdapter(
                     parent,
                     false
                 ),
-                searchOnClickListener = searchOnClickListener,
+                onBookmarkClick = searchOnClickListener::onBookmarkClick,
             )
 
             ItemType.VIDEO.viewTypeNum -> VideoSearchViewHolder(
@@ -107,7 +107,7 @@ class SearchAdapter(
                     parent,
                     false
                 ),
-                searchOnClickListener = searchOnClickListener,
+                onBookmarkClick = searchOnClickListener::onBookmarkClick,
             )
 
             else -> NotImplementedYetViewHolder(
